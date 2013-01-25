@@ -1,0 +1,36 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+
+<link rel="stylesheet" href="login_stylesheet.css">
+
+<title>Hi</title>
+</head>
+
+<body>
+
+<div align="center">
+<h2>DHS Hardcode</h2>
+</div>
+<!-- Replace login.php with the proper GAE method -->
+<form action="login.php" method="POST" align="center">
+
+<!--Ignore these textfields if we are using the GAE login-->
+<!--
+<input type="text" name="username" class="text-field" placeholder="Username">
+<br>
+<input type="password" name="password" class="text-field" placeholder="Password">
+<br>
+-->
+
+<input type="submit" value="Login" class="red-button">
+<br>
+<!-- Replace google.com with the proper GAE page -->
+<a href="http://google.com">
+<input type="button" name="guest_login" value="View as guest" class="blue-button">
+</a>
+</form>
+
+</body>
+
+</html>
