@@ -1,7 +1,14 @@
 import webapp2
+import jinja2
+import os
 from google.appengine.ext import db
 from google.appengine.api import users
 import datetime
+
+# initialize template
+jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
+                                       autoescape=True)
+
 
 class Items(db.Model): #key_name = id
     Title = db.StringProperty()
@@ -20,12 +27,22 @@ class Login(webapp2.RequestHandler):
     def get(self):
         user = users.get_current_user()
         if user:
-            self.response.write("""<h1>SECURITY NOT DONE. USE AT OWN RISK.</h1><br>""")
-            self.response.write("""<a href="/browse">Browse Items</a><br>""")
-            self.response.write("""<a href="%s">Log Out</a>""" % users.create_logout_url("/"))
+            url = ('/browse')
+            urltext = 'Browse'
+            #self.redirect('/browse')
         else:
-            self.response.write("""<h1>SECURITY NOT DONE. USE AT OWN RISK.</h1><br>""")
-            self.response.write("""<a href="%s">Log In</a>""" % users.create_login_url(self.request.uri))
+            # login link
+            url = users.create_login_url('/')
+            urltext='Log in'
+            
+        template_values = {
+		'url': url,
+                'urltext':urltext,
+	}
+
+        template = jinja_environment.get_template('login.html')
+        self.response.out.write(template.render(template_values))
+
     
 class Browse(webapp2.RequestHandler):
     def get(self):
