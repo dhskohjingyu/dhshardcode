@@ -5,12 +5,11 @@ from google.appengine.ext import db
 from google.appengine.api import users
 import datetime
 
-# initialize template
+
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
                                        autoescape=True)
 
-
-class Items(db.Model): #key_name = id
+class Items(db.Model): #key_name = key_date
     Title = db.StringProperty()
     Seller = db.UserProperty()
     Description = db.StringProperty()
@@ -42,12 +41,11 @@ class Login(webapp2.RequestHandler):
 
         template = jinja_environment.get_template('login.html')
         self.response.out.write(template.render(template_values))
-
     
 class Browse(webapp2.RequestHandler):
     def get(self):
         user = users.get_current_user()
-        self.response.write("""<h1>HI """ + user.nickname() + """</h1>""")
+        self.response.write("""<h1>HI """ + user.name() + """</h1>""")
         self.response.write("""<table border="1" cellspacing="0"><tr>
                                 <td>Title</td>
                                 <td>Seller</td>
@@ -61,7 +59,7 @@ class Browse(webapp2.RequestHandler):
             self.response.write("""<td>""" + i.Seller.nickname() + """</td>""")
             self.response.write("""<td>""" + i.Price + """</td>""")
             self.response.write("""<td>""" + i.Creation_Date + """</td>""")
-            self.response.write("""<td><form name="item_detail" action="/item_detail" method="post">""")
+            self.response.write("""<td><form name="item_detail" action="/item_detail" method="get">""")
             self.response.write("""<input type="text" value="%s" name="key_name" style="display:none">""" % str(i.Key_Date) + """</input>""")
             self.response.write("""<button type="submit">I'm interested!</button>""")
             self.response.write("""</form></td></tr>""")
@@ -73,9 +71,9 @@ class Browse(webapp2.RequestHandler):
 class Post_Item(webapp2.RequestHandler):
     def get(self):
         self.response.write("""<form name="item" action="/post_item_confirmed" method="post">
-                                Item: <input type="text" name="title" />
-                                Description: <input type="text" name="description" />
-                                Price: <input type="number" name="price" />
+                                Item: <input type="text" name="title" /><br>
+                                Description: <input type="text" name="description" /><br>
+                                Price: <input type="number" name="price" /><br>
                                 <input type="submit" />
                                 </form>""")
 
@@ -92,7 +90,7 @@ class Post_Item_Confirmed(webapp2.RequestHandler):
         self.redirect("/browse")
 
 class Item_Detail(webapp2.RequestHandler):
-    def post(self):
+    def get(self):
         key_name = self.request.get("key_name")
         self.response.write("""Title: """ + Items.get_by_key_name(key_name).Title)
         self.response.write("""<br>Description: """ + Items.get_by_key_name(key_name).Description)
@@ -101,13 +99,11 @@ class Item_Detail(webapp2.RequestHandler):
         self.response.write("""<br>Creation Date: """ + Items.get_by_key_name(key_name).Creation_Date)
         for comment in Items.get_by_key_name(key_name).Comments:
             self.response.write("""<br>""" + comment)
-        self.response.write("""<br><form name="comment_post" action="/comment_post" method="post">
+        self.response.write("""<br><form name="comment_post" action="/item_detail" method="post">
                                     <input type="text" name="key_name" style="display:none" value="%s" />
                                     <input type="text" name="comment" multiline="true" /><br>
                                     <button type="submit">Post Reply</button>
                                     </form>""" % key_name)
-
-class Comment_Post(webapp2.RequestHandler):
     def post(self):
         user = users.get_current_user()
         key_name = self.request.get("key_name")
@@ -117,6 +113,21 @@ class Comment_Post(webapp2.RequestHandler):
         Items(key_name = key_name, Title = Items.get_by_key_name(key_name).Title, Description = Items.get_by_key_name(key_name).Description, \
               Price = Items.get_by_key_name(key_name).Price, Creation_Date = Items.get_by_key_name(key_name).Creation_Date, \
               Key_Date = Items.get_by_key_name(key_name).Key_Date, Seller = Items.get_by_key_name(key_name).Seller, Comments = comments_list).put()
+        self.response.write("""Title: """ + Items.get_by_key_name(key_name).Title)
+        self.response.write("""<br>Description: """ + Items.get_by_key_name(key_name).Description)
+        self.response.write("""<br>Price: """ + Items.get_by_key_name(key_name).Price)
+        self.response.write("""<br>Seller: """ + Items.get_by_key_name(key_name).Seller.nickname())
+        self.response.write("""<br>Creation Date: """ + Items.get_by_key_name(key_name).Creation_Date)
+        for comment in Items.get_by_key_name(key_name).Comments:
+            self.response.write("""<br>""" + comment)
+        self.response.write("""<br><form name="comment_post" action="/item_detail" method="post">
+                                    <input type="text" name="key_name" style="display:none" value="%s" />
+                                    <input type="text" name="comment" multiline="true" /><br>
+                                    <button type="submit">Post Reply</button>
+                                    </form>""" % key_name)
+class Comment_Post(webapp2.RequestHandler):
+    def post(self):
+        
         self.redirect("/browse")
 
 app = webapp2.WSGIApplication([
