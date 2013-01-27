@@ -51,19 +51,31 @@ class Login(webapp2.RequestHandler):
 class Browse(webapp2.RequestHandler):
     def get(self):
         user = users.get_current_user()
-        data = db.GqlQuery("SELECT * FROM Items "
-                            "ORDER BY Creation_Date DESC")
-
         if user:
-            usernick = user.nickname()
+            self.response.write("""<h1>HI """ + user.nickname() + """</h1>""")
+        self.response.write("""<table border="1" cellspacing="0"><tr>
+                                <td>Title</td>
+                                <td>Seller</td>
+                                <td>Price</td>
+                                <td>Creation Date</td>
+                                <td>Interested?</td>
+                                </tr>""")
+        for i in Items.all():
+            self.response.write("""<tr>""")
+            self.response.write("""<td>""" + i.Title + """</td>""")
+            self.response.write("""<td>""" + i.Seller.nickname() + """</td>""")
+            self.response.write("""<td>""" + i.Price + """</td>""")
+            self.response.write("""<td>""" + i.Creation_Date + """</td>""")
+            self.response.write("""<td><form name="item_detail" action="/item_detail" method="get">""")
+            self.response.write("""<input type="text" value="%s" name="key_name" style="display:none">""" % str(i.Key_Date) + """</input>""")
+            self.response.write("""<button type="submit">I'm interested!</button>""")
+            self.response.write("""</form></td></tr>""")
+        self.response.write("""</table>""")
+        self.response.write("""<form method="get" action="/post_item">
+                                <button type="submit">Post Item</button>
+                                </form>""")
 
-        template_values = {
-            'usernick':usernick,
-            'data' :data,
-            'user' : user,
-            }
-        
-        template = jinja_environment.get_template('browse.html')
+        template = jinja_environment.get_template('login.html')
         self.response.out.write(template.render(template_values))
 
 

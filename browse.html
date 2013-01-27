@@ -1,0 +1,38 @@
+<!DOCTYPE HTML>
+<head> 
+		<link rel="stylesheet" href="/static/table_stylesheet.css">
+	<script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js'></script>
+    <script type="text/javascript" src="/static/table_script.js"></script>
+	<title>Marketplace</title>
+ </head>
+ <body>
+ 	{% if user %}
+ 	<h1> Hi {{usernick}} ! </h1>
+ 	{% else %}
+ 	<h1> Hi guest! </h1>
+ 	{% endif %}
+ 	<div id = "page-wrap">
+ 	<table border="1" bordercolor="#FFCC00" style="background-color:#FFFFCC" width="100%" cellpadding="3" cellspacing="0"><tr>
+                                <td>Title</td>
+                                <td>Seller</td>
+                                <td>Price</td>
+                                <td>Creation Date</td>
+                                <td>Interested?</td>
+                                </tr>
+
+    {% for i in data %}
+    <tr><td>  {{i.Title}}  </td>
+    <td> {{i.Seller.nickname()}}</td>
+    <td> {{i.Price}} </td>
+    <td> {{i.Creation_Date}} </td>
+    <td><form name="item_detail" action="/item_detail" method="get">
+    <input type="text" value= "{{i.Key_Date}}" name="key_name" style="display:none">
+    <button type="submit">I'm interested!</button>
+</form></td></tr> 
+	{% endfor %}
+</table>
+</div>
+
+<form method="get" action="/post_item">
+                                <button type="submit">Post Item</button>
+                                </form>
