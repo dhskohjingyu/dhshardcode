@@ -38,8 +38,12 @@
 <form method="get" action="/post_item">
 	{% if user %}
                                 <button type="submit">Post Item</button>
+                            </form>
                             {% else %}
                             <button type="button" disabled>Please log in to post item</button>
+                        </form>
+<form method="get" align="left" action="">
+                            <input type = "button" onClick="window.location='{{login}}'" value = 'Log in'>
+                        </form>
                             {% endif %}
 
-                                </form>

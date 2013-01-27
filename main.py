@@ -58,11 +58,14 @@ class Browse(webapp2.RequestHandler):
             usernick = user.nickname()
         else:
             usernick = 'guest'
+            login = users.create_login_url(self.request.uri)
+
 
         template_values = {
             'usernick':usernick,
             'data' :data,
             'user' : user,
+            'login':login,
             }
         
         template = jinja_environment.get_template('browse.html')
