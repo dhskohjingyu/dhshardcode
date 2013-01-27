@@ -12,13 +12,13 @@
  	<h1> Hi guest! </h1>
  	{% endif %}
  	<div id = "page-wrap">
- 	<table border="1" bordercolor="#FFCC00" style="background-color:#FFFFCC" width="100%" cellpadding="3" cellspacing="0"><tr> <b>
-                                <td>Title</td>
-                                <td>Seller</td>
-                                <td>Price</td>
-                                <td>Creation Date</td>
-                                <td>Interested?</td>
-                                </tr></b>
+ 	<table border="1" bordercolor="#FFCC00" style="background-color:#FFFFCC" width="100%" cellpadding="3" cellspacing="0"><tr> 
+                                <td><b>Title</b></td>
+                                <td><b>Seller</b></td>
+                                <td><b>Price</b></td>
+                                <td><b>Creation Date</b></td>
+                                <td><b>Interested?</b></td>
+                                </tr>
 
     {% for i in data %}
     <tr><td>  {{i.Title}}  </td>
