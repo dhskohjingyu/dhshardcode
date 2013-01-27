@@ -52,8 +52,7 @@ class Login(webapp2.RequestHandler):
 class Browse(webapp2.RequestHandler):
     def get(self):
         user = users.get_current_user()
-        data = db.GqlQuery("SELECT * FROM Items "
-                            "ORDER BY Creation_Date ASC")
+        data = Items.all()
 
         if user:
             usernick = user.nickname()
@@ -96,22 +95,20 @@ class Post_Item_Confirmed(webapp2.RequestHandler):
         #mail
         user_address = user.email()
         sender_address = "DHShardcode <hardcodedhs@gmail.com>"
-        subject = "Your item has been created"
+        subject = "[DHS HARDCODE]Your item has been created."
         body = ''' Your item has been created.
     Title: %s
     Description: %s
     Price: %s
+
+    Thank you for using our service.
                     '''%(title, description, price)
         mail.send_mail(sender_address, user_address, subject, body)
-
-
-
-
-        
         self.redirect("/browse")
 
 class Item_Detail(webapp2.RequestHandler):
     def get(self):
+        user = users.get_current_user()
         key_name = self.request.get("key_name")
         self.response.write("""Title: """ + Items.get_by_key_name(key_name).Title)
         self.response.write("""<br>Description: """ + Items.get_by_key_name(key_name).Description)
@@ -120,11 +117,12 @@ class Item_Detail(webapp2.RequestHandler):
         self.response.write("""<br>Creation Date: """ + Items.get_by_key_name(key_name).Creation_Date)
         for comment in Items.get_by_key_name(key_name).Comments:
             self.response.write("""<br>""" + comment)
-        self.response.write("""<br><form name="comment_post" action="/item_detail" method="post">
-                                    <input type="text" name="key_name" style="display:none" value="%s" />
-                                    <input type="text" name="comment" multiline="true" /><br>
-                                    <button type="submit">Post Reply</button>
-                                    </form>""" % key_name)
+        if user:
+            self.response.write("""<br><form name="comment_post" action="/item_detail" method="post">
+                                        <input type="text" name="key_name" style="display:none" value="%s" />
+                                        <input type="text" name="comment" multiline="true" /><br>
+                                        <button type="submit">Post Reply</button>
+                                        </form>""" % key_name)
     def post(self):
         user = users.get_current_user()
         key_name = self.request.get("key_name")
@@ -134,6 +132,13 @@ class Item_Detail(webapp2.RequestHandler):
         Items(key_name = key_name, Title = Items.get_by_key_name(key_name).Title, Description = Items.get_by_key_name(key_name).Description, \
               Price = Items.get_by_key_name(key_name).Price, Creation_Date = Items.get_by_key_name(key_name).Creation_Date, \
               Key_Date = Items.get_by_key_name(key_name).Key_Date, Seller = Items.get_by_key_name(key_name).Seller, Comments = comments_list).put()
+        user_address = Items.get_by_key_name(key_name).Seller.email()
+        sender_address = "DHShardcode <hardcodedhs@gmail.com>"
+        subject = "[DHS HARDCODE] %s commented on your item" % user.email()
+        body = '''%s commented on your item: %s
+Please visit dhshardcode.appspot.com to view your item.
+Thank you for using our service.''' %(user.email(), comment)
+        mail.send_mail(sender_address, user_address, subject, body)
         self.response.write("""Title: """ + Items.get_by_key_name(key_name).Title)
         self.response.write("""<br>Description: """ + Items.get_by_key_name(key_name).Description)
         self.response.write("""<br>Price: """ + Items.get_by_key_name(key_name).Price)
@@ -141,21 +146,19 @@ class Item_Detail(webapp2.RequestHandler):
         self.response.write("""<br>Creation Date: """ + Items.get_by_key_name(key_name).Creation_Date)
         for comment in Items.get_by_key_name(key_name).Comments:
             self.response.write("""<br>""" + comment)
-        self.response.write("""<br><form name="comment_post" action="/item_detail" method="post">
-                                    <input type="text" name="key_name" style="display:none" value="%s" />
-                                    <input type="text" name="comment" multiline="true" /><br>
+
+        if user:
+            
+            self.response.write("""<br><form name="comment_post" action="/item_detail" method="post">
+                            <input type="text" name="key_name" style="display:none" value="%s" />
+                            <input type="text" name="comment" multiline="true" /><br>
                                     <button type="submit">Post Reply</button>
                                     </form>""" % key_name)
-class Comment_Post(webapp2.RequestHandler):
-    def post(self):
-        
-        self.redirect("/browse")
 
 app = webapp2.WSGIApplication([
     ('/', Login),
     ('/browse', Browse),
     ('/post_item', Post_Item),
     ('/post_item_confirmed', Post_Item_Confirmed),
-    ('/item_detail', Item_Detail),
-    ('/comment_post', Comment_Post)
+    ('/item_detail', Item_Detail)
 ], debug=True)
