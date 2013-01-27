@@ -56,6 +56,7 @@ class Browse(webapp2.RequestHandler):
 
         if user:
             usernick = user.nickname()
+            login = ''
         else:
             usernick = 'guest'
             login = users.create_login_url(self.request.uri)
@@ -74,12 +75,12 @@ class Browse(webapp2.RequestHandler):
 
 class Post_Item(webapp2.RequestHandler):
     def get(self):
-        self.response.write("""<form name="item" action="/post_item_confirmed" method="post">
-                                Item: <input type="text" name="title" /><br>
-                                Description: <input type="text" name="description" /><br>
-                                Price: <input type="number" name="price" /><br>
-                                <input type="submit" />
-                                </form>""")
+        template_values = {
+
+            }
+        template = jinja_environment.get_template('postitem.html')
+        self.response.out.write(template.render(template_values))
+
 
 class Post_Item_Confirmed(webapp2.RequestHandler):
     def post(self):
