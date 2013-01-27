@@ -2,8 +2,13 @@ dhshardcode
 http://dhshardcode.appspot.com
 ===========
 A project brought to you by:
-Mr Ryan Tan     github.com/blacksleek
-Mr Toh Zi Jie   github.com/tohzijie
-Mr Koh Jing Yu  github.com/dhskohjingyu
-Mr Ma Tang Hao  github.com/harryggg
-Mr Liu Feng Yuan github.com/narutoliu
+
+Ryan Tan     http://github.com/blacksleek
+
+Toh Zi Jie   http://github.com/tohzijie
+
+Koh Jing Yu  http://github.com/dhskohjingyu
+
+Ma Tang Hao  http://github.com/harryggg
+
+Liu Feng Yuan http://github.com/narutoliu
