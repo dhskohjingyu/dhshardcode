@@ -33,6 +33,13 @@
 </table>
 </div>
 
+<br>
+
 <form method="get" action="/post_item">
+	{% if user %}
                                 <button type="submit">Post Item</button>
+                            {% else %}
+                            <button type="button" disabled>Please log in to post item</button>
+                            {% endif %}
+
                                 </form>
