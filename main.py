@@ -4,6 +4,7 @@ import os
 from google.appengine.ext import db
 from google.appengine.api import users
 import datetime
+from google.appengine.api import mail
 
 
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
@@ -92,6 +93,21 @@ class Post_Item_Confirmed(webapp2.RequestHandler):
         creation_date = str((datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%d %B %Y %I:%M %p"))
         key_date = str(datetime.datetime.now() + datetime.timedelta(hours=8))
         Items(key_name = key_date, Title = title, Description = description, Price = price, Seller = seller, Creation_Date = creation_date, Key_Date = key_date).put()
+        #mail
+        user_address = user.email()
+        sender_address = "DHShardcode <hardcodedhs@gmail.com>"
+        subject = "Your item has been created"
+        body = ''' Your item has been created.
+    Title: %s
+    Description: %s
+    Price: %s
+                    '''%(title, description, price)
+        mail.send_mail(sender_address, user_address, subject, body)
+
+
+
+
+        
         self.redirect("/browse")
 
 class Item_Detail(webapp2.RequestHandler):
