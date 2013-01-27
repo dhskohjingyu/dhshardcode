@@ -52,10 +52,12 @@ class Browse(webapp2.RequestHandler):
     def get(self):
         user = users.get_current_user()
         data = db.GqlQuery("SELECT * FROM Items "
-                            "ORDER BY Creation_Date DESC")
+                            "ORDER BY Creation_Date ASC")
 
         if user:
             usernick = user.nickname()
+        else:
+            usernick = 'guest'
 
         template_values = {
             'usernick':usernick,

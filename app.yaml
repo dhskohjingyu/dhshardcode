@@ -14,8 +14,7 @@ handlers:
   login: required
 
 - url: .*
-  script: main.app
-  login: required  
+  script: main.app 
 
 libraries:
 - name: webapp2
