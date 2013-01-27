@@ -12,20 +12,17 @@
 <div align="center">
 <h2>DHS Hardcode</h2>
 </div>
-{% if user %}
-<form method="LINK" align="center" action="{{url}}">
-<input type="submit" value="{{urltext}}" class="red-button">
-<br>
 
-{% else %}
-<form method="LINK" align="center" action="{{url}}">
-<input type="submit" value="{{urltext}}" class="red-button">
-<br>
-<input type="submit" href="/browse" value="View as guest" class="blue-button">
 
-{% endif %}
-
+<form method="get" align="center" action="">
+<input type="button" onClick="window.location='{{url_red}}'" value="{{urltext_red}}" class="red-button">
+<input type="button" onClick="window.location='{{url_blue}}'" value="{{urltext_blue}}" class="blue-button">
 </form>
+
+
+
+
+
 
 </body>
 

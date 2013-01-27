@@ -26,17 +26,23 @@ class Login(webapp2.RequestHandler):
     def get(self):
         user = users.get_current_user()
         if user:
-            url = ('/browse')
-            urltext = 'Browse'
-            #self.redirect('/browse')
+            url_red = ('/browse')
+            urltext_red = 'Browse'
+            url_blue = (users.create_logout_url("/"))
+            urltext_blue = 'Log Out'
+            
         else:
             # login link
-            url = users.create_login_url('/')
-            urltext='Log in'
+            url_red = users.create_login_url(self.request.uri)
+            urltext_red ='Log in'
+            url_blue = ('/browse')
+            urltext_blue = 'View as guest'
             
         template_values = {
-		'url': url,
-                'urltext':urltext,
+		'url_red': url_red,
+                'urltext_red':urltext_red,
+                'url_blue': url_blue,
+                'urltext_blue': urltext_blue,
 	}
 
         template = jinja_environment.get_template('login.html')
@@ -45,7 +51,8 @@ class Login(webapp2.RequestHandler):
 class Browse(webapp2.RequestHandler):
     def get(self):
         user = users.get_current_user()
-        self.response.write("""<h1>HI """ + user.name() + """</h1>""")
+        if user:
+            self.response.write("""<h1>HI """ + user.nickname() + """</h1>""")
         self.response.write("""<table border="1" cellspacing="0"><tr>
                                 <td>Title</td>
                                 <td>Seller</td>
