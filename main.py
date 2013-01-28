@@ -76,6 +76,7 @@ class Browse(webapp2.RequestHandler):
             'data' :data,
             'user' : user,
             'login':login,
+            'User':User,
             }
         
         template = jinja_environment.get_template('browse.html')
