@@ -11,7 +11,7 @@
 <br>
 	
 	{% for comment in Items.get_by_key_name(key_name).Comments %}
-	<p> {{comment}} </p>
+	<p> [{{messagetime}}] {{comment}} </p>
 	{% endfor %}
 	{% if user %}
 	<br><form name="comment_post" action="/item_detail" method="post">

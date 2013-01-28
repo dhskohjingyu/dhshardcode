@@ -19,6 +19,7 @@ class Items(db.Model): #key_name = key_date
     Creation_Date = db.StringProperty()
     Key_Date = db.StringProperty()
     Comments = db.ListProperty(str)
+    Message_Time = db.StringProperty()
 
 class User(db.Model): #key_name = email
     Name = db.StringProperty()
@@ -135,11 +136,15 @@ class Item_Detail(webapp2.RequestHandler):
     def get(self):
         user = users.get_current_user()
         key_name = self.request.get("key_name")
+        messagetime = str((datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%d %B %Y %I:%M %p"))
+
+        Items(Message_Time = messagetime).put()
 
         template_values = {
 		'user':user,
                 'key_name':key_name,
                 'Items':Items,
+                'messagetime':messagetime,
 	}
 
         template = jinja_environment.get_template('itemdetail.html')
@@ -152,12 +157,15 @@ class Item_Detail(webapp2.RequestHandler):
         comment = user.nickname() + """ says: """ + self.request.get("comment") #needs more efficient way of storing comments
         comments_list = Items.get_by_key_name(key_name).Comments
         comments_list.append(comment)
+        messagetime = str((datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%d %B %Y %I:%M %p"))
+
         Items(key_name = key_name, Title = Items.get_by_key_name(key_name).Title, Description = Items.get_by_key_name(key_name).Description, \
               Price = Items.get_by_key_name(key_name).Price, Creation_Date = Items.get_by_key_name(key_name).Creation_Date, \
-              Key_Date = Items.get_by_key_name(key_name).Key_Date, Seller = Items.get_by_key_name(key_name).Seller, Comments = comments_list).put()
+              Key_Date = Items.get_by_key_name(key_name).Key_Date, Seller = Items.get_by_key_name(key_name).Seller, Comments = comments_list, Message_Time = messagetime).put()
+
 
         try: #email (just in case mail exceeds the daily quota of 100 )
-            user_address = Items.get_by_key_name(key_name).Seller.email()
+            user_address = user.email()
             sender_address = "DHShardcode <hardcodedhs@gmail.com>"
             subject = "[DHS HARDCODE] %s commented on your item" % user.email()
             body = '''%s commented on your item: %s
