@@ -17,7 +17,7 @@
                                 <td><b>Seller</b></td>
                                 <td><b>Price</b></td>
                                 <td><b>Creation Date</b></td>
-                                <td><b>Interested?</b></td>
+                                <td><b>Details</b></td>
                                 </tr>
 
     {% for i in data %}
@@ -27,7 +27,7 @@
     <td> {{i.Creation_Date}} </td>
     <td><form name="item_detail" action="/item_detail" method="get">
     <input type="text" value= "{{i.Key_Date}}" name="key_name" style="display:none">
-    <button type="submit">I'm interested!</button>
+    <button type="submit">Details</button>
 </form></td></tr> 
 	{% endfor %}
 </table>
@@ -39,11 +39,5 @@
 	{% if user %}
                                 <button type="submit">Post Item</button>
                             </form>
-                            {% else %}
-                            <button type="button" disabled>Please log in to post item</button>
-                        </form>
-<form method="get" align="left" action="">
-                            <input type = "button" onClick="window.location='{{login}}'" value = 'Log in'>
-                        </form>
                             {% endif %}
 
