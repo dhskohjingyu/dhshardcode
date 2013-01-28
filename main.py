@@ -149,26 +149,33 @@ class Item_Detail(webapp2.RequestHandler):
 
             
     def post(self):
-        user = users.get_current_user()
-        key_name = self.request.get("key_name")
-        comment = user.nickname() + """ says: """ + self.request.get("comment") #needs more efficient way of storing comments
-        comments_list = Items.get_by_key_name(key_name).Comments
-        comments_list.append(comment)
-        Items(key_name = key_name, Title = Items.get_by_key_name(key_name).Title, Description = Items.get_by_key_name(key_name).Description, \
-              Price = Items.get_by_key_name(key_name).Price, Creation_Date = Items.get_by_key_name(key_name).Creation_Date, \
-              Key_Date = Items.get_by_key_name(key_name).Key_Date, Seller = Items.get_by_key_name(key_name).Seller, Comments = comments_list).put()
-
         try: #email (just in case mail exceeds the daily quota of 100 )
-            user_address = user.email()
+            user = users.get_current_user()
+            key_name = self.request.get("key_name")
+            comment = user.nickname() + """ says: """ + self.request.get("comment") #needs more efficient way of storing comments
+            comments_list = Items.get_by_key_name(key_name).Comments
+            comments_list.append(comment)
+            Items(key_name = key_name, Title = Items.get_by_key_name(key_name).Title, Description = Items.get_by_key_name(key_name).Description, \
+                  Price = Items.get_by_key_name(key_name).Price, Creation_Date = Items.get_by_key_name(key_name).Creation_Date, \
+                  Key_Date = Items.get_by_key_name(key_name).Key_Date, Seller = Items.get_by_key_name(key_name).Seller, Comments = comments_list).put()
+
+            user_address = Items.get_by_key_name(key_name).Seller.email()
             sender_address = "DHShardcode <hardcodedhs@gmail.com>"
-            subject = "[DHS HARDCODE] %s commented on your item" % user.email()
+            subject = "[DHS HARDCODE] %s commented on your item" %(user.email())
             body = '''%s commented on your item: %s
     Please visit dhshardcode.appspot.com to view your item.
     Thank you for using our service.''' %(user.email(), comment)
             mail.send_mail(sender_address, user_address, subject, body)
 
         except:
-            mail= ' no mail sent'
+            user = users.get_current_user()
+            key_name = self.request.get("key_name")
+            comment = user.nickname() + """ says: """ + self.request.get("comment") #needs more efficient way of storing comments
+            comments_list = Items.get_by_key_name(key_name).Comments
+            comments_list.append(comment)
+            Items(key_name = key_name, Title = Items.get_by_key_name(key_name).Title, Description = Items.get_by_key_name(key_name).Description, \
+                  Price = Items.get_by_key_name(key_name).Price, Creation_Date = Items.get_by_key_name(key_name).Creation_Date, \
+                  Key_Date = Items.get_by_key_name(key_name).Key_Date, Seller = Items.get_by_key_name(key_name).Seller, Comments = comments_list).put()
 
         template_values = {
 		'user':user,
