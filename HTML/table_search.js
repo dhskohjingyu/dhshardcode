@@ -1,7 +1,7 @@
 window.onload = function()
 {
 	// replace #search_table with the id of the table
-	var $rows = $("#search_table tr");
+	var $rows = $("#browse_table tr");
 
 	$rows.hide();
 	

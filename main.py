@@ -13,15 +13,17 @@ jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.di
 class Items(db.Model): #key_name = key_date
     Title = db.StringProperty()
     Seller = db.UserProperty()
+    Seller_Name = db.StringProperty()
     Description = db.StringProperty()
     Price = db.StringProperty()
     Creation_Date = db.StringProperty()
     Key_Date = db.StringProperty()
     Comments = db.ListProperty(str)
 
-class Profile(db.Model): #key_name = email
+class User(db.Model): #key_name = email
     Name = db.StringProperty()
-    Items = db.StringProperty()
+    Sell_Items = db.StringListProperty()
+    Buy_Items = db.StringListProperty()
 
 class Login(webapp2.RequestHandler):
     def get(self):
@@ -55,8 +57,14 @@ class Browse(webapp2.RequestHandler):
         data = Items.all()
 
         if user:
-            usernick = user.nickname()
-            login = ''
+            if User.get_by_key_name(user.email()):
+                usernick = User.get_by_key_name(user.email()).Name
+                login = ''
+            else:
+                self.redirect("/profile") 
+                usernick = user.email()
+                login = ''
+                
         else:
             usernick = 'guest'
             login = users.create_login_url(self.request.uri)
@@ -71,6 +79,21 @@ class Browse(webapp2.RequestHandler):
         
         template = jinja_environment.get_template('browse.html')
         self.response.out.write(template.render(template_values))
+
+class Profile(webapp2.RequestHandler):
+    def get(self):
+        user = users.get_current_user()
+        self.response.out.write('''
+                <form method='post' action='/profileedit'>
+                        <b>nickname</b><input type='text' name='nickname' value='%s' />
+                        <button type='submit'>change</button>
+                </form>'''%(user.email()))
+        
+class Edit_Profile(webapp2.RequestHandler):
+	def post(self):
+            user = users.get_current_user()
+            User(key_name = user.email(), Name = self.request.get('nickname')).put()
+            self.redirect('/browse')
 
 
 class Post_Item(webapp2.RequestHandler):
@@ -91,7 +114,7 @@ class Post_Item_Confirmed(webapp2.RequestHandler):
         price = self.request.get("price")
         creation_date = str((datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%d %B %Y %I:%M %p"))
         key_date = str(datetime.datetime.now() + datetime.timedelta(hours=8))
-        Items(key_name = key_date, Title = title, Description = description, Price = price, Seller = seller, Creation_Date = creation_date, Key_Date = key_date).put()
+        Items(key_name = key_date, Title = title, Description = description, Price = price, Seller = seller, Seller_Name = User.get_by_key_name(user.email()).Name, Creation_Date = creation_date, Key_Date = key_date).put()
         #mail
         user_address = user.email()
         sender_address = "DHShardcode <hardcodedhs@gmail.com>"
@@ -160,5 +183,7 @@ app = webapp2.WSGIApplication([
     ('/browse', Browse),
     ('/post_item', Post_Item),
     ('/post_item_confirmed', Post_Item_Confirmed),
-    ('/item_detail', Item_Detail)
+    ('/item_detail', Item_Detail),
+    ('/profile',Profile),
+    ('/profileedit',Edit_Profile)
 ], debug=True)

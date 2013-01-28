@@ -1,18 +1,22 @@
 <!DOCTYPE HTML>
 <head> 
-		<link rel="stylesheet" href="/static/table_stylesheet.css">
+	<link rel="stylesheet" href="/static/table_stylesheet.css">
 	<script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js'></script>
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.js"></script>
     <script type="text/javascript" src="/static/table_script.js"></script>
+	<script type="text/javascript" src="/static/table_search.js"></script>
 	<title>Marketplace</title>
  </head>
  <body>
  	{% if user %}
  	<h1> Hi {{usernick}} ! </h1>
+	<a href='/profile'>PROFILE</a>
  	{% else %}
  	<h1> Hi guest! </h1>
  	{% endif %}
  	<div id = "page-wrap">
- 	<table border="1" bordercolor="#FFCC00" style="background-color:#FFFFCC" width="100%" cellpadding="3" cellspacing="0"><tr> 
+	<input type="text" id="search" placeholder="Search" />
+ 	<table border="1" id="browse_table" bordercolor="#FFCC00" style="background-color:#FFFFCC" width="100%" cellpadding="3" cellspacing="0"><tr id="browse_header"> 
                                 <td><b>Title</b></td>
                                 <td><b>Seller</b></td>
                                 <td><b>Price</b></td>
@@ -22,7 +26,7 @@
 
     {% for i in data %}
     <tr><td>  {{i.Title}}  </td>
-    <td> {{i.Seller.nickname()}}</td>
+    <td> {{i.Seller}}</td>
     <td> {{i.Price}} </td>
     <td> {{i.Creation_Date}} </td>
     <td><form name="item_detail" action="/item_detail" method="get">
