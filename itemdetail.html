@@ -1,0 +1,27 @@
+<!DOCTYPE HTML>
+<head>
+	<title>Item Details</title>
+</head>
+<body>
+	<h3>Title: {{Items.get_by_key_name(key_name).Title}}</h3>
+	<h3>Description: {{Items.get_by_key_name(key_name).Description}}</h3>
+	<h3>Price: {{Items.get_by_key_name(key_name).Price}}</h3>
+	<h3>Seller:{{Items.get_by_key_name(key_name).Seller.nickname()}}</h3>
+	<h3>Creation Date: {{Items.get_by_key_name(key_name).Creation_Date}}</h3>
+<br>
+	
+	{% for comment in Items.get_by_key_name(key_name).Comments %}
+	<p> {{comment}} </p>
+	{% endfor %}
+	{% if user %}
+	<br><form name="comment_post" action="/item_detail" method="post">
+                                        <input type="text" name="key_name" style="display:none" value="{{key_name}}" />
+                                        <input type="text" name="comment" multiline="true" /><br>
+                                        <button type="submit">Post Reply</button>
+                                        </form>
+    {% else %}
+    <input type = 'submit' disabled value='Please log in to post reply'>
+    {% endif %}
+
+</body>
+</html>
