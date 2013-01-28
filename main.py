@@ -156,7 +156,7 @@ class Item_Detail(webapp2.RequestHandler):
               Price = Items.get_by_key_name(key_name).Price, Creation_Date = Items.get_by_key_name(key_name).Creation_Date, \
               Key_Date = Items.get_by_key_name(key_name).Key_Date, Seller = Items.get_by_key_name(key_name).Seller, Comments = comments_list).put()
 
-        try:
+        try: #email (just in case mail exceeds the daily quota of 100 )
             user_address = Items.get_by_key_name(key_name).Seller.email()
             sender_address = "DHShardcode <hardcodedhs@gmail.com>"
             subject = "[DHS HARDCODE] %s commented on your item" % user.email()
