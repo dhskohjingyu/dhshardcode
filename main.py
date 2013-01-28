@@ -23,8 +23,8 @@ class Items(db.Model): #key_name = key_date
 
 class User(db.Model): #key_name = email
     Name = db.StringProperty()
-    Sell_Items = db.StringListProperty()
-    Buy_Items = db.StringListProperty()
+    Sell_Items = db.ListProperty(str)
+    Buy_Items = db.ListProperty(str)
 
 class Login(webapp2.RequestHandler):
     def get(self):
@@ -59,11 +59,12 @@ class Browse(webapp2.RequestHandler):
 
         if user:
             if User.get_by_key_name(user.email()):
+                
                 usernick = User.get_by_key_name(user.email()).Name
                 login = ''
             else:
-                self.redirect("/profile") 
-                usernick = user.email()
+                User(key_name = user.email(), Name = user.nickname()).put()
+                usernick = User(key_name = user.email()).Name
                 login = ''
                 
         else:
@@ -85,11 +86,28 @@ class Browse(webapp2.RequestHandler):
 class Profile(webapp2.RequestHandler):
     def get(self):
         user = users.get_current_user()
+##        if not User(key_name = user.email()).Name:
+##            User(key_name = user.email(),Name=user.nickname()).put()
         self.response.out.write('''
                 <form method='post' action='/profileedit'>
                         <b>nickname</b><input type='text' name='nickname' value='%s' />
                         <button type='submit'>change</button>
-                </form>'''%(user.email()))
+                </form><br /><br />
+                
+                
+                '''%(User.get_by_key_name(user.email()).Name))
+        selllist = User.get_by_key_name(user.email()).Sell_Items
+        
+        for element in selllist:
+            item = Items.get_by_key_name(element)
+            self.response.out.write('''
+                <form method='post' action='/item_delete'>
+                    <b>Name:</b>%s
+                    <input type='text' name='itemid' value='%s' style='display:none' />
+                    <button type='submit'>delete item</button>
+                <form><br/>'''%(item.Title,item.Key_Date))
+        
+        
         
 class Edit_Profile(webapp2.RequestHandler):
 	def post(self):
@@ -117,6 +135,11 @@ class Post_Item_Confirmed(webapp2.RequestHandler):
         creation_date = str((datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%d %B %Y %I:%M %p"))
         key_date = str(datetime.datetime.now() + datetime.timedelta(hours=8))
         Items(key_name = key_date, Title = title, Description = description, Price = price, Seller = seller, Seller_Name = User.get_by_key_name(user.email()).Name, Creation_Date = creation_date, Key_Date = key_date).put()
+      
+        selllist = User.get_by_key_name(user.email()).Sell_Items
+        selllist.append(key_date)
+        
+        User(key_name = user.email(),Sell_Items = selllist).put()
         try:#mail
             user_address = user.email()
             sender_address = "DHShardcode <hardcodedhs@gmail.com>"
