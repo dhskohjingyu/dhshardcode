@@ -21,18 +21,21 @@
                                 <td><b>Seller</b></td>
                                 <td><b>Price</b></td>
                                 <td><b>Creation Date</b></td>
-                                <td><b>Details</b></td>
+                                <!--<td><b>Details</b></td>-->
                                 </tr>
 
     {% for i in data %}
-    <tr><td>  {{i.Title}}  </td>
+    <tr><td> <form name="item_detail" action="/item_detail" method="get">
+    <input type="text" value= "{{i.Key_Date}}" name="key_name" style="display:none">
+    <button type="submit">{{i.Title}} </button> </form>  </td>
     <td> {{i.Seller}}</td>
     <td> {{i.Price}} </td>
     <td> {{i.Creation_Date}} </td>
+    <!--
     <td><form name="item_detail" action="/item_detail" method="get">
     <input type="text" value= "{{i.Key_Date}}" name="key_name" style="display:none">
     <button type="submit">Details</button>
-</form></td></tr> 
+</form></td>--></tr> 
 	{% endfor %}
 </table>
 </div>
