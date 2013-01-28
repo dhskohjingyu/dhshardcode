@@ -165,32 +165,17 @@ class Item_Detail(webapp2.RequestHandler):
     Thank you for using our service.''' %(user.email(), comment)
             mail.send_mail(sender_address, user_address, subject, body)
 
-
-            
-            self.response.write("""Title: """ + Items.get_by_key_name(key_name).Title)
-            self.response.write("""<br>Description: """ + Items.get_by_key_name(key_name).Description)
-            self.response.write("""<br>Price: """ + Items.get_by_key_name(key_name).Price)
-            self.response.write("""<br>Seller: """ + Items.get_by_key_name(key_name).Seller.nickname())
-            self.response.write("""<br>Creation Date: """ + Items.get_by_key_name(key_name).Creation_Date)
-            for comment in Items.get_by_key_name(key_name).Comments:
-                self.response.write("""<br>""" + comment)
         except:
-            self.response.write("""Title: """ + Items.get_by_key_name(key_name).Title)
-            self.response.write("""<br>Description: """ + Items.get_by_key_name(key_name).Description)
-            self.response.write("""<br>Price: """ + Items.get_by_key_name(key_name).Price)
-            self.response.write("""<br>Seller: """ + Items.get_by_key_name(key_name).Seller.nickname())
-            self.response.write("""<br>Creation Date: """ + Items.get_by_key_name(key_name).Creation_Date)
-            for comment in Items.get_by_key_name(key_name).Comments:
-                self.response.write("""<br>""" + comment)
-        
+            mail= ' no mail sent'
 
-        if user:
-            
-            self.response.write("""<br><form name="comment_post" action="/item_detail" method="post">
-                            <input type="text" name="key_name" style="display:none" value="%s" />
-                            <input type="text" name="comment" multiline="true" /><br>
-                                    <button type="submit">Post Reply</button>
-                                    </form>""" % key_name)
+        template_values = {
+		'user':user,
+                'key_name':key_name,
+                'Items':Items,
+	}
+
+        template = jinja_environment.get_template('itemdetail.html')
+        self.response.out.write(template.render(template_values))
 
 app = webapp2.WSGIApplication([
     ('/', Login),
