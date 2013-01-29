@@ -60,13 +60,12 @@ class Browse(webapp2.RequestHandler):
 ##            User(key_name = user.email(), Name=user.email()).put()
         if user:
             if User.get_by_key_name(user.email()):
-                
                 usernick = User.get_by_key_name(user.email()).Name
                 login = ''
             else:
                 User(key_name = user.email(), Name = user.nickname()).put()
-                usernick = User(key_name = user.email()).Name
                 login = ''
+                usernick = User.get_by_key_name(user.email()).Name
                 
         else:
             usernick = 'guest'
@@ -96,40 +95,37 @@ class Profile(webapp2.RequestHandler):
                 </form><br /><br />
                 
                 '''%(User.get_by_key_name(user.email()).Name))
-        selllist = User.get_by_key_name(user.email()).Sell_Items
+        sell_list = User.get_by_key_name(user.email()).Sell_Items
         
-        for element in selllist:
+        for element in sell_list:
             item = Items.get_by_key_name(element)
             self.response.out.write('''
                 <form method='post' action='/item_delete'>
                     <b>Name:</b>%s
-                    <input type='text' name='itemid' value='%s' style='display:none' />
+                    <input type='text' name='key_name' value='%s' style='display:none' />
                     <button type='submit'>delete item</button>
-                <form><br/>'''%(item.Title,item.Key_Date))
+                <form><br/>''' % (item.Title, item.Key_Date))
         self.response.out.write('''<a href='/deleteprofile'>Delete Profile</a>''')
 
 class Delete_Profile(webapp2.RequestHandler):
     def get(self):
         user=users.get_current_user()
-        print Items.all()
-        for element in Items.all():
+        for i in Items.all():
             
-            if element.Seller == user.email() :
-                Items.get_by_key_name(element.Key_Date).delete()
-        try:
-            User.get_by_key_name(user.email()).delete()
-        except:
-            pass
+            if i.Seller.email() == user.email() :
+                Items.get_by_key_name(i.Key_Date).delete()
+        User.get_by_key_name(user.email()).delete()        
+        self.redirect("/")
         
         
 class Delete_Item(webapp2.RequestHandler):
     def post(self):
         user=users.get_current_user()
-        userdb = User.get_by_key_name(user.email())
-        selllist = userdb.Sell_Items
-        selllist.remove(self.request.get('itemid'))
-        User(key_name = user.email(), Name = userdb.Name, Sell_Items = selllist).put()
-        Items.get_by_key_name(self.request.get('itemid')).delete()
+        name = User.get_by_key_name(user.email()).Name
+        sell_list = User.get_by_key_name(user.email()).Sell_Items
+        sell_list.remove(self.request.get('key_name'))
+        User(key_name = user.email(), Name = name, Sell_Items = sell_list).put()
+        Items.get_by_key_name(self.request.get('key_name')).delete()
         self.redirect('/profile')
         
         
@@ -162,11 +158,10 @@ class Post_Item_Confirmed(webapp2.RequestHandler):
         creation_date = str((datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%d %B %Y %I:%M %p"))
         key_date = str(datetime.datetime.now() + datetime.timedelta(hours=8))
         Items(key_name = key_date, Title = title, Description = description, Price = price, Seller = seller, Seller_Name = User.get_by_key_name(user.email()).Name, Creation_Date = creation_date, Key_Date = key_date).put()
-      
-        selllist = User.get_by_key_name(user.email()).Sell_Items
-        selllist.append(key_date)
+        sell_list = User.get_by_key_name(user.email()).Sell_Items
+        sell_list.append(key_date)
         nickname = User.get_by_key_name(user.email()).Name
-        User(key_name = user.email(),Sell_Items = selllist,Name = nickname).put()
+        User(key_name = user.email(), Sell_Items = sell_list, Name = nickname).put()
         try:#mail
             user_address = user.email()
             sender_address = "DHShardcode <hardcodedhs@gmail.com>"
