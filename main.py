@@ -56,7 +56,8 @@ class Browse(webapp2.RequestHandler):
     def get(self):
         user = users.get_current_user()
         data = Items.all()
-
+##        if not User.get_by_key_name(user.email()):
+##            User(key_name = user.email(), Name=user.email()).put()
         if user:
             if User.get_by_key_name(user.email()):
                 
@@ -94,7 +95,6 @@ class Profile(webapp2.RequestHandler):
                         <button type='submit'>change</button>
                 </form><br /><br />
                 
-                
                 '''%(User.get_by_key_name(user.email()).Name))
         selllist = User.get_by_key_name(user.email()).Sell_Items
         
@@ -106,14 +106,41 @@ class Profile(webapp2.RequestHandler):
                     <input type='text' name='itemid' value='%s' style='display:none' />
                     <button type='submit'>delete item</button>
                 <form><br/>'''%(item.Title,item.Key_Date))
+        self.response.out.write('''<a href='/deleteprofile'>Delete Profile</a>''')
+
+class Delete_Profile(webapp2.RequestHandler):
+    def get(self):
+        user=users.get_current_user()
+        print Items.all()
+        for element in Items.all():
+            
+            if element.Seller == user.email() :
+                Items.get_by_key_name(element.Key_Date).delete()
+        try:
+            User.get_by_key_name(user.email()).delete()
+        except:
+            pass
         
+        
+class Delete_Item(webapp2.RequestHandler):
+    def post(self):
+        user=users.get_current_user()
+        userdb = User.get_by_key_name(user.email())
+        selllist = userdb.Sell_Items
+        selllist.remove(self.request.get('itemid'))
+        User(key_name = user.email(), Name = userdb.Name, Sell_Items = selllist).put()
+        Items.get_by_key_name(self.request.get('itemid')).delete()
+        self.redirect('/profile')
         
         
 class Edit_Profile(webapp2.RequestHandler):
 	def post(self):
             user = users.get_current_user()
-            User(key_name = user.email(), Name = self.request.get('nickname')).put()
+            User(key_name = user.email(), Name = self.request.get('nickname'),Sell_Items = User.get_by_key_name(user.email()).Sell_Items).put()
+
+            
             self.redirect('/browse')
+
 
 
 class Post_Item(webapp2.RequestHandler):
@@ -138,8 +165,8 @@ class Post_Item_Confirmed(webapp2.RequestHandler):
       
         selllist = User.get_by_key_name(user.email()).Sell_Items
         selllist.append(key_date)
-        
-        User(key_name = user.email(),Sell_Items = selllist).put()
+        nickname = User.get_by_key_name(user.email()).Name
+        User(key_name = user.email(),Sell_Items = selllist,Name = nickname).put()
         try:#mail
             user_address = user.email()
             sender_address = "DHShardcode <hardcodedhs@gmail.com>"
@@ -217,5 +244,7 @@ app = webapp2.WSGIApplication([
     ('/post_item_confirmed', Post_Item_Confirmed),
     ('/item_detail', Item_Detail),
     ('/profile',Profile),
-    ('/profileedit',Edit_Profile)
+    ('/profileedit',Edit_Profile),
+    ('/item_delete',Delete_Item),
+    ('/deleteprofile',Delete_Profile)
 ], debug=True)
