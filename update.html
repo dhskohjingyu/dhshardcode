@@ -3,10 +3,11 @@
 	<title>Update Item</title>
 </head>
 <body>
-			<form action="/updateitem" method="get">
-					Item: <input type="text" name="title" value = "{{Items.get_by_key_name(key_name).Title|escape}}"><br>
-	Description: <input type="text" name="description" value = "{{Items.get_by_key_name(key_name).Description|escape}}"><br>
-	Price: <input type="number" name="price" value = "{{Items.get_by_key_name(key_name).Price|escape}}"><br>
+			<form action="/update_item_confirmed" method="post">
+			<input type="text" name="key_name" value = "{{key_name}}" style="display:none" />
+					Item: <input type="text" name="title" value = "{{title|escape}}"><br>
+	Description: <input type="text" name="description" value = "{{description|escape}}"><br>
+	Price: <input type="number" name="price" value = "{{price|escape}}"><br>
 	
 	<input type="submit" />
 </form>

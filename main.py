@@ -96,7 +96,8 @@ class Profile(webapp2.RequestHandler):
                 
                 '''%(User.get_by_key_name(user.email()).Name))
         sell_list = User.get_by_key_name(user.email()).Sell_Items
-        
+        key_name = self.request.get("key_name")
+
         for element in sell_list:
             item = Items.get_by_key_name(element)
             self.response.out.write('''
@@ -104,7 +105,11 @@ class Profile(webapp2.RequestHandler):
                     <b>Name:</b>%s
                     <input type='text' name='key_name' value='%s' style='display:none' />
                     <button type='submit'>delete item</button>
-                <form><br/>''' % (item.Title, item.Key_Date))
+                </form>
+                <form method='post' action='/update_item'>
+                    <input type='text' name='key_name' value='%s' style='display:none' />
+                    <button type='submit'>Update item</button>
+                </form><br/>''' % (item.Title, item.Key_Date, item.Key_Date))
         self.response.out.write('''<a href='/deleteprofile'>Delete Profile</a>''')
 
 class Delete_Profile(webapp2.RequestHandler):
@@ -116,6 +121,45 @@ class Delete_Profile(webapp2.RequestHandler):
                 Items.get_by_key_name(i.Key_Date).delete()
         User.get_by_key_name(user.email()).delete()        
         self.redirect("/")
+
+class Update_Item(webapp2.RequestHandler):
+    def post(self):
+        key_name = self.request.get("key_name")
+        user = users.get_current_user()
+        title = Items.get_by_key_name(key_name).Title
+        description = Items.get_by_key_name(key_name).Description
+        price = Items.get_by_key_name(key_name).Price
+            
+        template_values = {
+            'title':title,
+            'description':description,
+            'price':price,
+            'key_name':key_name,
+
+            }
+        
+        template = jinja_environment.get_template('update.html')
+        self.response.out.write(template.render(template_values))
+
+class Update_Item_Confirmed(webapp2.RequestHandler): #current progress (not done)
+    def post(self):
+        user = users.get_current_user()
+        key_name = self.request.get("key_name")
+        title = self.request.get('title')
+        description = self.request.get('description')
+        price = self.request.get('price')
+        if title and description and price:
+            items = Items(key_name = key_name)
+            items.Title = title
+            items.Description = description
+            items.Price = price
+            items.put()
+            self.redirect("/browse")
+        else:
+            self.response.out.write('''<!DOCTYPE html><html><title>Update failed</title><head><meta name="viewport" content="width=device-width, height=device-height, user-scalable=no">
+   Update failed! Please try again.</head>
+                                                        <body><form method="LINK" action="/"><input type="submit" value="Back">
+</form></html>''')
         
         
 class Delete_Item(webapp2.RequestHandler):
@@ -241,5 +285,7 @@ app = webapp2.WSGIApplication([
     ('/profile',Profile),
     ('/profileedit',Edit_Profile),
     ('/item_delete',Delete_Item),
-    ('/deleteprofile',Delete_Profile)
+    ('/deleteprofile',Delete_Profile),
+    ('/update_item_confirmed',Update_Item_Confirmed),
+    ('/update_item', Update_Item),
 ], debug=True)
