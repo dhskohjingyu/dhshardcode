@@ -7,6 +7,12 @@ body {
   background: #272822;
 }
 
+
+input[type=text]
+{
+	height: 25px;
+}
+
 .page {
   background: #fff;
   width: 400px;

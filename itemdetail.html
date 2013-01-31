@@ -1,9 +1,12 @@
 <!DOCTYPE HTML>
 <head>
+	<link rel="stylesheet" type="text/css" href="/static/detail_stylesheet.css">
+	<link rel="stylesheet" type="text/css" href="/static/generic_stylesheet.css">
 	<title>Item Details</title>
 </head>
 <body>
-	<h3>Title: {{Items.get_by_key_name(key_name).Title}}</h3>
+    <div class="page curltl">
+	<h2>Title: {{Items.get_by_key_name(key_name).Title}}</h2>
 	<h3>Description: {{Items.get_by_key_name(key_name).Description}}</h3>
 	<h3>Price: {{Items.get_by_key_name(key_name).Price}}</h3>
 	<h3>Seller:{{Items.get_by_key_name(key_name).Seller.nickname()}}</h3>
@@ -17,11 +20,18 @@
 	<br><form name="comment_post" action="/item_detail" method="post">
                                         <input type="text" name="key_name" style="display:none" value="{{key_name}}" >
                                         <input type="text" name="comment" multiline="true" value = '{{escape}}'><br>
-                                        <button type="submit">Post Reply</button>
+                                        <button class="red-button" type="submit">Post Reply</button>
                                         </form>
     {% else %}
-    <input type = 'submit' disabled value='Please log in to post reply'>
+    <input class="red-button" type = 'submit' disabled value='Please log in to post reply'>
     {% endif %}
+	</div>
 
+	{% if user is not Items.get_by_key_name(key_name).Seller}
+	<!-- Change action to appropriate one -->
+	<br><form name="interested_post" action="/item_detail" method="post">
+                                        <button class="blue-button" type="submit">I'm interested</button>
+                                        </form>
+	{% endif %}
 </body>
 </html>
