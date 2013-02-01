@@ -96,8 +96,7 @@ class Profile(webapp2.RequestHandler):
                 
                 '''%(User.get_by_key_name(user.email()).Name))
         sell_list = User.get_by_key_name(user.email()).Sell_Items
-        key_name = self.request.get("key_name")
-
+        
         for element in sell_list:
             item = Items.get_by_key_name(element)
             self.response.out.write('''
@@ -105,11 +104,7 @@ class Profile(webapp2.RequestHandler):
                     <b>Name:</b>%s
                     <input type='text' name='key_name' value='%s' style='display:none' />
                     <button type='submit'>delete item</button>
-                </form>
-                <form method='post' action='/update_item'>
-                    <input type='text' name='key_name' value='%s' style='display:none' />
-                    <button type='submit'>Update item</button>
-                </form><br/>''' % (item.Title, item.Key_Date, item.Key_Date))
+                <form><br/>''' % (item.Title, item.Key_Date))
         self.response.out.write('''<a href='/deleteprofile'>Delete Profile</a>''')
 
 class Delete_Profile(webapp2.RequestHandler):
@@ -121,45 +116,6 @@ class Delete_Profile(webapp2.RequestHandler):
                 Items.get_by_key_name(i.Key_Date).delete()
         User.get_by_key_name(user.email()).delete()        
         self.redirect("/")
-
-class Update_Item(webapp2.RequestHandler):
-    def post(self):
-        key_name = self.request.get("key_name")
-        user = users.get_current_user()
-        title = Items.get_by_key_name(key_name).Title
-        description = Items.get_by_key_name(key_name).Description
-        price = Items.get_by_key_name(key_name).Price
-            
-        template_values = {
-            'title':title,
-            'description':description,
-            'price':price,
-            'key_name':key_name,
-
-            }
-        
-        template = jinja_environment.get_template('update.html')
-        self.response.out.write(template.render(template_values))
-
-class Update_Item_Confirmed(webapp2.RequestHandler): #current progress (not done)
-    def post(self):
-        user = users.get_current_user()
-        key_name = self.request.get("key_name")
-        title = self.request.get('title')
-        description = self.request.get('description')
-        price = self.request.get('price')
-        if title and description and price:
-            items = Items(key_name = key_name)
-            items.Title = title
-            items.Description = description
-            items.Price = price
-            items.put()
-            self.redirect("/browse")
-        else:
-            self.response.out.write('''<!DOCTYPE html><html><title>Update failed</title><head><meta name="viewport" content="width=device-width, height=device-height, user-scalable=no">
-   Update failed! Please try again.</head>
-                                                        <body><form method="LINK" action="/"><input type="submit" value="Back">
-</form></html>''')
         
         
 class Delete_Item(webapp2.RequestHandler):
@@ -174,12 +130,10 @@ class Delete_Item(webapp2.RequestHandler):
         
         
 class Edit_Profile(webapp2.RequestHandler):
-	def post(self):
-            user = users.get_current_user()
-            User(key_name = user.email(), Name = self.request.get('nickname'),Sell_Items = User.get_by_key_name(user.email()).Sell_Items).put()
-
-            
-            self.redirect('/browse')
+    def post(self):
+        user = users.get_current_user()
+        ser(key_name = user.email(), Name = self.request.get('nickname'),Sell_Items = User.get_by_key_name(user.email()).Sell_Items).put()
+        self.redirect('/browse')
 
 
 
@@ -226,11 +180,13 @@ class Item_Detail(webapp2.RequestHandler):
     def get(self):
         user = users.get_current_user()
         key_name = self.request.get("key_name")
+        is_seller = (Items.Seller.nickname() == user.nickname()) # update
 
         template_values = {
 		'user':user,
                 'key_name':key_name,
                 'Items':Items,
+                'is_seller':is_seller,
 	}
 
         template = jinja_environment.get_template('itemdetail.html')
@@ -247,7 +203,7 @@ class Item_Detail(webapp2.RequestHandler):
             Items(key_name = key_name, Title = Items.get_by_key_name(key_name).Title, Description = Items.get_by_key_name(key_name).Description, \
                   Price = Items.get_by_key_name(key_name).Price, Creation_Date = Items.get_by_key_name(key_name).Creation_Date, \
                   Key_Date = Items.get_by_key_name(key_name).Key_Date, Seller = Items.get_by_key_name(key_name).Seller, Comments = comments_list).put()
-
+            
             user_address = Items.get_by_key_name(key_name).Seller.email()
             sender_address = "DHShardcode <hardcodedhs@gmail.com>"
             subject = "[DHS HARDCODE] %s commented on your item" %(user.email())
@@ -275,6 +231,31 @@ class Item_Detail(webapp2.RequestHandler):
         template = jinja_environment.get_template('itemdetail.html')
         self.response.out.write(template.render(template_values))
 
+class Expired(webapp2.RequestHandler):
+    def get(self):
+        user=users.get_current_user()
+        data=Items.all()
+        today_date=datetime.datetime.today()
+        month_list={'January':1,'February':2,'March':3,'April':4,'May':5,
+            'June':6,'July':7,'August':8,'September':9,'October':10,
+            'November':11,'December':12}
+
+        for i in data:
+            creation_date=i.Creation_Date.split()
+            #convert string back to date format
+            creation_date=creation_date[0]+'-'+str(month_list[creation_date[1]])+'-'+creation_date[2]
+            creation_date=datetime.datetime.strptime(creation_date,'%d-%m-%Y')
+            #set expired date to 30 day after creation date
+            expired_date=creation_date+datetime.timedelta(days=1)
+            if today_date>expired_date:
+                i.delete()
+        
+        template_values = {
+            'data' :data,
+            }
+        template = jinja_environment.get_template('expired.html')
+        self.response.out.write(template.render(template_values))       
+
         
 app = webapp2.WSGIApplication([
     ('/', Login),
@@ -286,6 +267,5 @@ app = webapp2.WSGIApplication([
     ('/profileedit',Edit_Profile),
     ('/item_delete',Delete_Item),
     ('/deleteprofile',Delete_Profile),
-    ('/update_item_confirmed',Update_Item_Confirmed),
-    ('/update_item', Update_Item),
+    ('/expired',Expired)
 ], debug=True)
