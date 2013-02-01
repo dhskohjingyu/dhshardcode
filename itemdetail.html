@@ -27,7 +27,7 @@
     {% endif %}
 	</div>
 
-	{% if user is not Items.get_by_key_name(key_name).Seller}
+	{% if is_seller %}
 	<!-- Change action to appropriate one -->
 	<br><form name="interested_post" action="/item_detail" method="post">
                                         <button class="blue-button" type="submit">I'm interested</button>
