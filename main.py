@@ -189,12 +189,17 @@ class Item_Detail(webapp2.RequestHandler):
             not_seller = False
         else:
             not_seller = True
+        if user.email() in Items.get_by_key_name(key_name).Buyers:
+            not_buyer = False
+        else:
+            not_buyer = True
 
         template_values = {
 		'user':user,
                 'key_name':key_name,
                 'Items':Items,
                 'not_seller':not_seller,
+                'not_buyer':not_buyer,
 	}
 
         template = jinja_environment.get_template('itemdetail.html')
@@ -223,6 +228,10 @@ class Item_Detail(webapp2.RequestHandler):
                 not_seller = False
             else:
                 not_seller = True
+            if user.email() in Items.get_by_key_name(key_name).Buyers:
+                not_buyer = False
+            else:
+                not_buyer = True
 
         except:
             user = users.get_current_user()
@@ -237,12 +246,17 @@ class Item_Detail(webapp2.RequestHandler):
                 not_seller = False
             else:
                 not_seller = True
+            if user.email() in Items.get_by_key_name(key_name).Buyers:
+                not_buyer = False
+            else:
+                not_buyer = True
 
         template_values = {
 		'user':user,
                 'key_name':key_name,
                 'Items':Items,
                 'not_seller':not_seller,
+                'not_buyer':not_buyer,
 	}
  
         template = jinja_environment.get_template('itemdetail.html')
@@ -251,16 +265,26 @@ class Item_Detail(webapp2.RequestHandler):
 class Interest(webapp2.RequestHandler):
     def post(self):
         user = users.get_current_user()
-        item_id = self.request.get('item_id')
-        buyers = Items.get_by_key_name(item_id).Buyers
+        key_name = self.request.get('key_name')
+        buyers = Items.get_by_key_name(key_name).Buyers
         buy_items = User.get_by_key_name(user.email()).Buy_Items
         if not(user.email() in buyers):
             buyers.append(user.email())
-            buy_items.append(item_id)
+            buy_items.append(key_name)
             User(key_name = user.email(), Name = User.get_by_key_name(user.email()).Name ,Sell_Items = User.get_by_key_name(user.email()).Sell_Items,Buy_Items=buy_items).put()
-            Items(key_name =item_id , Buyers = buyers ,Title = Items.get_by_key_name(item_id).Title, Description = Items.get_by_key_name(item_id).Description, \
-                  Price = Items.get_by_key_name(item_id).Price, Creation_Date = Items.get_by_key_name(item_id).Creation_Date, \
-                  Key_Date = Items.get_by_key_name(item_id).Key_Date, Seller = Items.get_by_key_name(item_id).Seller, Comments = Items.get_by_key_name(item_id).Comments).put()
+            Items(key_name =key_name , Buyers = buyers ,Title = Items.get_by_key_name(key_name).Title, Description = Items.get_by_key_name(key_name).Description, \
+                  Price = Items.get_by_key_name(key_name).Price, Creation_Date = Items.get_by_key_name(key_name).Creation_Date, \
+                  Key_Date = Items.get_by_key_name(key_name).Key_Date, Seller = Items.get_by_key_name(key_name).Seller, Comments = Items.get_by_key_name(key_name).Comments).put()
+        try:
+            user_address = Items.get_by_key_name(key_name).Seller.email()
+            sender_address = "DHShardcode <hardcodedhs@gmail.com>"
+            subject = "[DHS HARDCODE] %s indicated interest on your item" %(user.email())
+            body = '''%s indicated interest on your item: %s
+        Please visit dhshardcode.appspot.com to view your item.
+        Thank you for using our service.''' %(user.email(), Items.get_by_key_name(key_name).Title)
+            mail.send_mail(sender_address, user_address, subject, body)
+        except:
+            pass
         self.redirect('/browse')
 
 

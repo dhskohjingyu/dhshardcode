@@ -27,12 +27,15 @@
     {% endif %}
 	</div>
 
-	{% if not_seller %}
+	{% if not_seller and not_buyer %}
 	<!-- Change action to appropriate one -->
 	<br><form name="interested_post" action="/interest" method="post">
-	<input type="text" name="item_id" class="invisible" value="{{Items.get_by_key_name(key_name).Key_Date}}" readonly style="display:none;">
+	<input type="text" name="key_name" class="invisible" value="{{Items.get_by_key_name(key_name).Key_Date}}" readonly style="display:none;">
                                         <button class="blue-button" type="submit">I'm interested</button>
                                         </form>
+	{% elif not not_buyer %}
+	<br><input class="blue-button" type = 'submit' disabled value='Interest Indicated!'>
+	
 	{% endif %}
 </body>
 </html>
