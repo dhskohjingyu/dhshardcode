@@ -27,7 +27,7 @@
     {% endif %}
 	</div>
 
-	{% if is_seller %}
+	{% if not_seller %}
 	<!-- Change action to appropriate one -->
 	<br><form name="interested_post" action="/item_detail" method="post">
 	<input type="text" name="item_id" class="invisible" value={Items.get_by_key_name(key_name).Title} readonly style="display:none;">

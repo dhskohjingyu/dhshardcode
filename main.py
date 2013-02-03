@@ -56,8 +56,6 @@ class Browse(webapp2.RequestHandler):
     def get(self):
         user = users.get_current_user()
         data = Items.all()
-##        if not User.get_by_key_name(user.email()):
-##            User(key_name = user.email(), Name=user.email()).put()
         if user:
             if User.get_by_key_name(user.email()):
                 usernick = User.get_by_key_name(user.email()).Name
@@ -86,8 +84,6 @@ class Browse(webapp2.RequestHandler):
 class Profile(webapp2.RequestHandler):
     def get(self):
         user = users.get_current_user()
-##        if not User(key_name = user.email()).Name:
-##            User(key_name = user.email(),Name=user.nickname()).put()
         self.response.out.write('''
                 <form method='post' action='/profileedit'>
                         <b>nickname</b><input type='text' name='nickname' value='%s' />
@@ -180,13 +176,16 @@ class Item_Detail(webapp2.RequestHandler):
     def get(self):
         user = users.get_current_user()
         key_name = self.request.get("key_name")
-        is_seller = (Items.Seller.nickname() == user.nickname()) # update
+        if key_name in User.get_by_key_name(user.email()).Sell_Items:
+            not_seller = False
+        else:
+            not_seller = True
 
         template_values = {
 		'user':user,
                 'key_name':key_name,
                 'Items':Items,
-                'is_seller':is_seller,
+                'not_seller':not_seller,
 	}
 
         template = jinja_environment.get_template('itemdetail.html')
@@ -211,6 +210,10 @@ class Item_Detail(webapp2.RequestHandler):
     Please visit dhshardcode.appspot.com to view your item.
     Thank you for using our service.''' %(user.email(), comment)
             mail.send_mail(sender_address, user_address, subject, body)
+            if key_name in User.get_by_key_name(user.email()).Sell_Items:
+                not_seller = False
+            else:
+                not_seller = True
 
         except:
             user = users.get_current_user()
@@ -221,11 +224,16 @@ class Item_Detail(webapp2.RequestHandler):
             Items(key_name = key_name, Title = Items.get_by_key_name(key_name).Title, Description = Items.get_by_key_name(key_name).Description, \
                   Price = Items.get_by_key_name(key_name).Price, Creation_Date = Items.get_by_key_name(key_name).Creation_Date, \
                   Key_Date = Items.get_by_key_name(key_name).Key_Date, Seller = Items.get_by_key_name(key_name).Seller, Comments = comments_list).put()
+            if key_name in User.get_by_key_name(user.email()).Sell_Items:
+                not_seller = False
+            else:
+                not_seller = True
 
         template_values = {
 		'user':user,
                 'key_name':key_name,
                 'Items':Items,
+                'not_seller':not_seller,
 	}
 
         template = jinja_environment.get_template('itemdetail.html')
@@ -245,7 +253,7 @@ class Expired(webapp2.RequestHandler):
             #convert string back to date format
             creation_date=creation_date[0]+'-'+str(month_list[creation_date[1]])+'-'+creation_date[2]
             creation_date=datetime.datetime.strptime(creation_date,'%d-%m-%Y')
-            #set expired date to 30 day after creation date
+            #set expired date to 30 days after creation date
             expired_date=creation_date+datetime.timedelta(days=1)
             if today_date>expired_date:
                 i.delete()
