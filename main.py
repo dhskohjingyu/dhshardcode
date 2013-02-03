@@ -285,7 +285,7 @@ class Interest(webapp2.RequestHandler):
             mail.send_mail(sender_address, user_address, subject, body)
         except:
             pass
-        self.redirect('/browse')
+        self.redirect('/item_detail?key_name=%s' % key_name)
 
 
 class Expired(webapp2.RequestHandler):
