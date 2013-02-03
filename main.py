@@ -20,6 +20,7 @@ class Items(db.Model): #key_name = key_date
     Key_Date = db.StringProperty()
     Comments = db.ListProperty(str)
     Message_Time = db.StringProperty()
+    Buyers = db.ListProperty(str)
 
 class User(db.Model): #key_name = email
     Name = db.StringProperty()
@@ -101,6 +102,14 @@ class Profile(webapp2.RequestHandler):
                     <input type='text' name='key_name' value='%s' style='display:none' />
                     <button type='submit'>delete item</button>
                 <form><br/>''' % (item.Title, item.Key_Date))
+            buyerlist=item.Buyers
+            if buyerlist:
+                self.response.out.write('''<b>BUYERS:</b>''')
+            
+                for buyer in buyerlist:
+                    self.response.out.write('''<h6>%s</h6>'''%User.get_by_key_name(buyer).Name)
+            
+            
         self.response.out.write('''<a href='/deleteprofile'>Delete Profile</a>''')
 
 class Delete_Profile(webapp2.RequestHandler):
@@ -128,7 +137,7 @@ class Delete_Item(webapp2.RequestHandler):
 class Edit_Profile(webapp2.RequestHandler):
     def post(self):
         user = users.get_current_user()
-        ser(key_name = user.email(), Name = self.request.get('nickname'),Sell_Items = User.get_by_key_name(user.email()).Sell_Items).put()
+        User(key_name = user.email(), Name = self.request.get('nickname'),Sell_Items = User.get_by_key_name(user.email()).Sell_Items,Buy_Items = User.get_by_key_name(user.email()).Buy_Items).put()
         self.redirect('/browse')
 
 
@@ -151,11 +160,11 @@ class Post_Item_Confirmed(webapp2.RequestHandler):
         price = self.request.get("price")
         creation_date = str((datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%d %B %Y %I:%M %p"))
         key_date = str(datetime.datetime.now() + datetime.timedelta(hours=8))
-        Items(key_name = key_date, Title = title, Description = description, Price = price, Seller = seller, Seller_Name = User.get_by_key_name(user.email()).Name, Creation_Date = creation_date, Key_Date = key_date).put()
+        Items(key_name = key_date, Buyers = [], Title = title, Description = description, Price = price, Seller = seller, Seller_Name = User.get_by_key_name(user.email()).Name, Creation_Date = creation_date, Key_Date = key_date).put()
         sell_list = User.get_by_key_name(user.email()).Sell_Items
         sell_list.append(key_date)
         nickname = User.get_by_key_name(user.email()).Name
-        User(key_name = user.email(), Sell_Items = sell_list, Name = nickname).put()
+        User(key_name = user.email(), Sell_Items = sell_list, Name = nickname,Buy_Items = User.get_by_key_name(user.email()).Buy_Items).put()
         try:#mail
             user_address = user.email()
             sender_address = "DHShardcode <hardcodedhs@gmail.com>"
@@ -199,7 +208,7 @@ class Item_Detail(webapp2.RequestHandler):
             comment = user.nickname() + """ says: """ + self.request.get("comment") #needs more efficient way of storing comments
             comments_list = Items.get_by_key_name(key_name).Comments
             comments_list.append(comment)
-            Items(key_name = key_name, Title = Items.get_by_key_name(key_name).Title, Description = Items.get_by_key_name(key_name).Description, \
+            Items(key_name = key_name, Buyers = Items.get_by_key_name(key_date).Buyers,Title = Items.get_by_key_name(key_name).Title, Description = Items.get_by_key_name(key_name).Description, \
                   Price = Items.get_by_key_name(key_name).Price, Creation_Date = Items.get_by_key_name(key_name).Creation_Date, \
                   Key_Date = Items.get_by_key_name(key_name).Key_Date, Seller = Items.get_by_key_name(key_name).Seller, Comments = comments_list).put()
             
@@ -221,7 +230,7 @@ class Item_Detail(webapp2.RequestHandler):
             comment = user.nickname() + """ says: """ + self.request.get("comment") #needs more efficient way of storing comments
             comments_list = Items.get_by_key_name(key_name).Comments
             comments_list.append(comment)
-            Items(key_name = key_name, Title = Items.get_by_key_name(key_name).Title, Description = Items.get_by_key_name(key_name).Description, \
+            Items(key_name = key_name, Buyers = Items.get_by_key_name(key_date).Buyers,Title = Items.get_by_key_name(key_name).Title, Description = Items.get_by_key_name(key_name).Description, \
                   Price = Items.get_by_key_name(key_name).Price, Creation_Date = Items.get_by_key_name(key_name).Creation_Date, \
                   Key_Date = Items.get_by_key_name(key_name).Key_Date, Seller = Items.get_by_key_name(key_name).Seller, Comments = comments_list).put()
             if key_name in User.get_by_key_name(user.email()).Sell_Items:
@@ -235,9 +244,25 @@ class Item_Detail(webapp2.RequestHandler):
                 'Items':Items,
                 'not_seller':not_seller,
 	}
-
+ 
         template = jinja_environment.get_template('itemdetail.html')
         self.response.out.write(template.render(template_values))
+
+class Interest(webapp2.RequestHandler):
+    def post(self):
+        user = users.get_current_user()
+        item_id = self.request.get('item_id')
+        buyers = Items.get_by_key_name(item_id).Buyers
+        buy_items = User.get_by_key_name(user.email()).Buy_Items
+        if not(user.email() in buyers):
+            buyers.append(user.email())
+            buy_items.append(item_id)
+            User(key_name = user.email(), Name = User.get_by_key_name(user.email()).Name ,Sell_Items = User.get_by_key_name(user.email()).Sell_Items,Buy_Items=buy_items).put()
+            Items(key_name =item_id , Buyers = buyers ,Title = Items.get_by_key_name(item_id).Title, Description = Items.get_by_key_name(item_id).Description, \
+                  Price = Items.get_by_key_name(item_id).Price, Creation_Date = Items.get_by_key_name(item_id).Creation_Date, \
+                  Key_Date = Items.get_by_key_name(item_id).Key_Date, Seller = Items.get_by_key_name(item_id).Seller, Comments = Items.get_by_key_name(item_id).Comments).put()
+        self.redirect('/browse')
+
 
 class Expired(webapp2.RequestHandler):
     def get(self):
@@ -275,5 +300,6 @@ app = webapp2.WSGIApplication([
     ('/profileedit',Edit_Profile),
     ('/item_delete',Delete_Item),
     ('/deleteprofile',Delete_Profile),
-    ('/expired',Expired)
+    ('/expired',Expired),
+    ('/interest',Interest)
 ], debug=True)

@@ -29,8 +29,8 @@
 
 	{% if not_seller %}
 	<!-- Change action to appropriate one -->
-	<br><form name="interested_post" action="/item_detail" method="post">
-	<input type="text" name="item_id" class="invisible" value={Items.get_by_key_name(key_name).Title} readonly style="display:none;">
+	<br><form name="interested_post" action="/interest" method="post">
+	<input type="text" name="item_id" class="invisible" value="{{Items.get_by_key_name(key_name).Key_Date}}" readonly style="display:none;">
                                         <button class="blue-button" type="submit">I'm interested</button>
                                         </form>
 	{% endif %}
