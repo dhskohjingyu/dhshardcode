@@ -23,6 +23,7 @@ class Items(db.Model): #key_name = key_date
     Buyers = db.ListProperty(str)
 
 class User(db.Model): #key_name = email
+    
     Name = db.StringProperty()
     Sell_Items = db.ListProperty(str)
     Buy_Items = db.ListProperty(str)
@@ -107,8 +108,13 @@ class Profile(webapp2.RequestHandler):
                 self.response.out.write('''<b>BUYERS:</b>''')
             
                 for buyer in buyerlist:
-                    self.response.out.write('''<h6>%s</h6>'''%User.get_by_key_name(buyer).Name)
-            
+                    self.response.out.write('''
+                        <form method='post' action='/trade'>
+                            <b>%s</b>
+                            <input type='text' name='buyer_id' value='%s' style='display:none' />
+                            <input type='text' name='item_id' value='%s' style='display:none' />
+                            <button type='submit'>Trade!</button>
+                        '''%(User.get_by_key_name(buyer).Name,buyer,element))       
             
         self.response.out.write('''<a href='/deleteprofile'>Delete Profile</a>''')
 
@@ -287,7 +293,20 @@ class Interest(webapp2.RequestHandler):
             pass
         self.redirect('/item_detail?key_name=%s' % key_name)
 
-
+class Trade(webapp2.RequestHandler):
+    def post(self):
+        user=user.get_current_user()
+        item_id = self.request.get('item_id')
+        buyer_id = self.requsest.get('buyer_id')
+        Items.get_by_key_name(item_id).delete()
+        sell_items = User.get_by_key_name(user.email()).Sell_Items
+        sell_items.remove(item_id)
+        User(key_name = user.email(), Name = User.get_by_key_name(user.email()).Name ,Sell_Items = sell_items , Buy_Items=User.get_by_key_name(user.email()).Buy_Items).put()
+        #1.delete from buy_list from everyone
+        #2. email buyer and seller
+            
+        self.redirect('/profile')
+        
 class Expired(webapp2.RequestHandler):
     def get(self):
         user=users.get_current_user()
@@ -325,5 +344,6 @@ app = webapp2.WSGIApplication([
     ('/item_delete',Delete_Item),
     ('/deleteprofile',Delete_Profile),
     ('/expired',Expired),
-    ('/interest',Interest)
+    ('/interest',Interest),
+    ('/trade',Trade)
 ], debug=True)
