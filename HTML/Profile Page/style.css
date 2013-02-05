@@ -1,0 +1,177 @@
+* {
+	margin: 0;
+	padding: 0;
+}
+
+form
+{
+	text-align: center;
+	color: #FFF;
+	font: bold 23px "Helvetica Neue", Helvetica, Arial, sans-serif;
+	text-shadow: 2px 2px 3px rgba(255, 255, 255, 0.05);
+}
+
+input[type=text]
+{
+	text-align: center;
+	margin-top: 50px;
+	font: bold 45px "Helvetica Neue", Helvetica, Arial, sans-serif;
+	text-shadow: 2px 2px 3px rgba(255, 255, 255, 0.05);
+	
+	background-color: transparent;
+	border-color: transparent;
+}
+
+body {
+  background: #333;
+}
+
+#container {
+	width: 320px;
+	margin: 0 auto;
+}
+
+h2 {
+	text-align: center;
+	margin-top: 50px;
+	font: bold 3.5em/1.5em "Helvetica Neue", Helvetica, Arial, sans-serif;
+	text-shadow: 2px 2px 3px rgba(255, 255, 255, 0.05);
+}
+
+h2 a {
+	color: #000;
+	color: rgba(0, 0, 0, .6);
+	text-decoration: none;
+
+
+h3 {
+	text-align: center;
+	margin-top: 50px;
+	font: bold 2.5em/1.5em "Helvetica Neue", Helvetica, Arial, sans-serif;
+	text-shadow: 2px 2px 3px rgba(255, 255, 255, 0.05);
+}
+
+
+/* photo class must be applied to all images */
+.photo {
+	margin: 50px;
+	border: 5px solid white;
+	width: 200px;
+	height: 200px;
+	position: relative;
+	float: left;
+	
+	-webkit-box-shadow: 3px 2px 3px rgba(0,0,0,0.4);
+	   -moz-box-shadow: 3px 2px 3px rgba(0,0,0,0.4);
+	     -o-box-shadow: 3px 2px 3px rgba(0,0,0,0.4);
+}
+
+
+/* ------------------ CLEAR FIX ------------------ */
+/* For modern browsers */
+#container:before,
+#container:after {
+    content:"";
+    display:table;
+}
+
+#container:after {
+    clear:both;
+}
+
+/* For IE 6/7 (trigger hasLayout) */
+#container {
+    zoom:1;
+}
+
+
+/* general tape css */
+.tapeone:before, .tapetwo:before, .tapetwo:after, .tapethree:before, .tapethree:after, .tapefour:before, .tapefour:after, .tapefive:before, .tapefive:after, .tapesix:before, .tapesix:after {
+	content: "";
+	height: 20px;
+	width: 80px;
+	background: rgba(255,255,255,0.5);
+	position: absolute;
+	
+	-webkit-box-shadow: 0px 1px 3px rgba(0,0,0,0.4);
+	   -moz-box-shadow: 0px 1px 3px rgba(0,0,0,0.4);
+	        box-shadow: 0px 1px 3px rgba(0,0,0,0.4);
+}
+
+
+/* individual tape - pick one */
+/*Top Center Tape*/
+.tapeone:before, .tapetwo:before {
+	top: 0%;
+	left: 50%;
+	margin: -12px 0 0 -40px;
+}
+
+/*Bottom Center Tape*/
+.tapetwo:after {
+	top: 100%;
+	left: 50%;
+	margin: -8px 0 0 -40px;
+}
+
+/*Top Left Tape*/
+.tapethree:before, .tapefour:before {
+	top: 0px;
+	left: 0%;
+	margin: 0 0 0 -25px;
+	
+	-webkit-transform: rotate(-40deg);
+	-moz-transform: rotate(-40deg);
+	-o-transform: rotate(-40deg);
+}
+
+/*Top Right Tape*/
+.tapethree:after, .tapefive:before {
+	top: 0px;
+	left: 100%;
+	margin: 0 0 0 -55px;
+	
+	-webkit-transform: rotate(40deg);
+	-moz-transform: rotate(40deg);
+	-o-transform: rotate(40deg);
+}
+
+/*Bottom Right Tape*/
+.tapefour:after {
+	top: 100%;
+	left: 100%;
+	margin: -20px 0 0 -55px;
+	
+	-webkit-transform: rotate(-40deg);
+	-moz-transform: rotate(-40deg);
+	-o-transform: rotate(-40deg);
+}
+
+/*Bottom Left Tape*/
+.tapefive:after {
+	top: 100%;
+	left: 0%;
+	margin: -20px 0 0 -25px;
+	
+	-webkit-transform: rotate(40deg);
+	-moz-transform: rotate(40deg);
+	-o-transform: rotate(40deg);
+}
+
+/*Center Left Tape*/
+.tapesix:before {
+	height: 80px;
+	width: 20px;
+	top: 50%;
+	left: 0%;
+	margin: -40px 0 0 -12px;
+}
+
+/*Center Left Tape*/
+.tapesix:after {
+	height: 80px;
+	width: 20px;
+	top: 50%;
+	left: 100%;
+	margin: -40px 0 0 -8px;
+}
