@@ -318,7 +318,7 @@ class Trade(webapp2.RequestHandler):
         except: 
             pass
 
-       try:
+        try:
             user_address = buyer_id
             sender_address = "DHShardcode <hardcodedhs@gmail.com>"
             subject = "[DHS HARDCODE]  Seller %s have decided to trade %s with you! " %(User.get_by_key_name(user.email()).Name,item_name)
