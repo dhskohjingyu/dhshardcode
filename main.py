@@ -245,7 +245,7 @@ class Item_Detail(webapp2.RequestHandler):
             comment = user.nickname() + """ says: """ + self.request.get("comment") #needs more efficient way of storing comments
             comments_list = Items.get_by_key_name(key_name).Comments
             comments_list.append(comment)
-            Items(key_name = key_name, Buyers = Items.get_by_key_name(key_date).Buyers,Title = Items.get_by_key_name(key_name).Title, Description = Items.get_by_key_name(key_name).Description, \
+            Items(key_name = key_name, Buyers = Items.get_by_key_name(key_name).Buyers,Title = Items.get_by_key_name(key_name).Title, Description = Items.get_by_key_name(key_name).Description, \
                   Price = Items.get_by_key_name(key_name).Price, Creation_Date = Items.get_by_key_name(key_name).Creation_Date, \
                   Key_Date = Items.get_by_key_name(key_name).Key_Date, Seller = Items.get_by_key_name(key_name).Seller, Comments = comments_list).put()
             if key_name in User.get_by_key_name(user.email()).Sell_Items:
@@ -298,12 +298,35 @@ class Trade(webapp2.RequestHandler):
         user=user.get_current_user()
         item_id = self.request.get('item_id')
         buyer_id = self.requsest.get('buyer_id')
+        buyers = Items.get_by_key_name(buyer_id).Buyers[:]
+        item_name=Items.get_by_key_name(item_id).Title
         Items.get_by_key_name(item_id).delete()
         sell_items = User.get_by_key_name(user.email()).Sell_Items
         sell_items.remove(item_id)
         User(key_name = user.email(), Name = User.get_by_key_name(user.email()).Name ,Sell_Items = sell_items , Buy_Items=User.get_by_key_name(user.email()).Buy_Items).put()
-        #1.delete from buy_list from everyone
-        #2. email buyer and seller
+        for buyer in buyers:
+            
+            buy_items = User.get_by_key_name(buyer).Buy_Items
+            buy_items.remove(item_id)
+            User(key_name = user.email(), Name = User.get_by_key_name(user.email()).Name ,Sell_Items = User.get_by_key_name(user.email()).Sell_Items,Buy_Items=buy_items).put()
+        try:
+            user_address = user.email()
+            sender_address = "DHShardcode <hardcodedhs@gmail.com>"
+            subject = "[DHS HARDCODE] you have decided to trade %s with %s " %(item_name,User.get_by_key_name(buyer_id).Name)
+            body = '''Please contact him/ her via the following email address: %s''' %(buyer_id)
+            mail.send_mail(sender_address, user_address, subject, body)
+        except: 
+            pass
+
+       try:
+            user_address = buyer_id
+            sender_address = "DHShardcode <hardcodedhs@gmail.com>"
+            subject = "[DHS HARDCODE]  Seller %s have decided to trade %s with you! " %(User.get_by_key_name(user.email()).Name,item_name)
+            body = '''Please contact him/ her via the following email address: %s''' %(user.email())
+            mail.send_mail(sender_address, user_address, subject, body)
+        except: 
+            pass
+        
             
         self.redirect('/profile')
         
