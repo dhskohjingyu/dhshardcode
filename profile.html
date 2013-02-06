@@ -1,0 +1,35 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>Profile</title>
+</head>
+<body>
+	<form method='post' action='/profileedit'>
+		<b>nickname</b>
+		<input type='text' name='nickname' value='{{User.get_by_key_name(user.email()).Name |escape}}'>
+		<button type='submit'>change</button>
+	</form>
+
+	<br /><br />
+{% for i in sell_list %}
+               <form method='post' action='/item_delete'>
+                    <b>Name: {{Title}}</b>
+                    <input type='text' name='key_name' value='{{Key_Date}}' style='display:none'>
+                    <button type='submit'>delete item</button>
+                <form><br/>
+	{% if buyerlist %}
+		<b> Buyers: </b>
+		{% for j in buyerlist %}
+			<form method='post' action='/trade'>
+			<b>{{j}}</b>
+			<input type='text' name='buyer_id' value='{i}' style='display:none'>
+			<input type='text' name='item_id' value='{j}' style='display:none'>
+			<button type='submit'>Trade!</button> <br/>
+		{% endfor %}
+	{% endif %}
+{% endfor %}
+
+<a href='/deleteprofile'>Delete Profile</a>
+
+</body>
+</html>

@@ -86,37 +86,24 @@ class Browse(webapp2.RequestHandler):
 class Profile(webapp2.RequestHandler):
     def get(self):
         user = users.get_current_user()
-        self.response.out.write('''
-                <form method='post' action='/profileedit'>
-                        <b>nickname</b><input type='text' name='nickname' value='%s' />
-                        <button type='submit'>change</button>
-                </form><br /><br />
-                
-                '''%(User.get_by_key_name(user.email()).Name))
         sell_list = User.get_by_key_name(user.email()).Sell_Items
-        
         for element in sell_list:
             item = Items.get_by_key_name(element)
-            self.response.out.write('''
-                <form method='post' action='/item_delete'>
-                    <b>Name:</b>%s
-                    <input type='text' name='key_name' value='%s' style='display:none' />
-                    <button type='submit'>delete item</button>
-                <form><br/>''' % (item.Title, item.Key_Date))
+            Title = item.Title
+            Key_Date = item.Key_Date
             buyerlist=item.Buyers
-            if buyerlist:
-                self.response.out.write('''<b>BUYERS:</b>''')
-            
-                for buyer in buyerlist:
-                    self.response.out.write('''
-                        <form method='post' action='/trade'>
-                            <b>%s</b>
-                            <input type='text' name='buyer_id' value='%s' style='display:none' />
-                            <input type='text' name='item_id' value='%s' style='display:none' />
-                            <button type='submit'>Trade!</button>
-                        '''%(User.get_by_key_name(buyer).Name,buyer,element))       
-            
-        self.response.out.write('''<a href='/deleteprofile'>Delete Profile</a>''')
+
+        template_values = {
+            'user':user,
+            'User':User,
+            'Title':Title,
+            'Key_Date':Key_Date,
+            'sell_list':sell_list,
+            'buyerlist':buyerlist,
+            }
+        
+        template = jinja_environment.get_template('profile.html')
+        self.response.out.write(template.render(template_values))
 
 class Delete_Profile(webapp2.RequestHandler):
     def get(self):
