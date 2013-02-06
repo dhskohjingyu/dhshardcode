@@ -87,6 +87,9 @@ class Profile(webapp2.RequestHandler):
     def get(self):
         user = users.get_current_user()
         sell_list = User.get_by_key_name(user.email()).Sell_Items
+        Title = ''
+        Key_Date = ''
+        buyerlist = ''
         for element in sell_list:
             item = Items.get_by_key_name(element)
             Title = item.Title
