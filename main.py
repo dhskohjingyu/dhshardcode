@@ -87,22 +87,12 @@ class Profile(webapp2.RequestHandler):
     def get(self):
         user = users.get_current_user()
         sell_list = User.get_by_key_name(user.email()).Sell_Items
-        Title = ''
-        Key_Date = ''
-        buyerlist = ''
-        for element in sell_list:
-            item = Items.get_by_key_name(element)
-            Title = item.Title
-            Key_Date = item.Key_Date
-            buyerlist=item.Buyers
 
         template_values = {
             'user':user,
             'User':User,
-            'Title':Title,
-            'Key_Date':Key_Date,
             'sell_list':sell_list,
-            'buyerlist':buyerlist,
+            'Items':Items,
             }
         
         template = jinja_environment.get_template('profile.html')

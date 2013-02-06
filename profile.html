@@ -12,11 +12,13 @@
 
 	<br /><br />
 {% for i in sell_list %}
+	{% set item = Items.get_by_key_name(i) %}
                <form method='post' action='/item_delete'>
-                    <b>Name: {{Title}}</b>
-                    <input type='text' name='key_name' value='{{Key_Date}}' style='display:none'>
+                    <b>Name: {{item.Title}}</b>
+                    <input type='text' name='key_name' value='{{item.Key_Date}}' style='display:none'>
                     <button type='submit'>delete item</button>
                 <form><br/>
+    {% set buyerlist = item.Buyers %}
 	{% if buyerlist %}
 		<b> Buyers: </b>
 		{% for j in buyerlist %}
