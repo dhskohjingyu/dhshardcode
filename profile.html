@@ -2,6 +2,7 @@
 <html>
 <head>
 <link rel="stylesheet" type="text/css" href="/static/profile_stylesheet.css"/>
+<link rel="stylesheet" type="text/css" href="/static/generic_stylesheet.css"/>
 <title>Profile</title>
 </head>
 <body>
@@ -16,7 +17,7 @@
 					<form method='post' action='/profileedit'>
 						<b>nickname</b>
 						<input type='text' name='nickname' value='{{User.get_by_key_name(user.email()).Name |escape}}'>
-						<button type='submit'>change</button>
+						<button type='submit' class="blue-button">change</button>
 					</form>
 					<h3>Singapore</h3>
 					<!--<h4><a href="http://dhs.sg/">http://dhs.sg/</a></h4>-->
@@ -43,7 +44,7 @@
 	   <form method='post' action='/item_delete'>
 			<b>Name: {{item.Title}}</b>
 			<input type='text' name='key_name' value='{{item.Key_Date}}' style='display:none'>
-			<button type='submit'>delete item</button>
+			<button type='submit' class="red-button">delete item</button>
 		</form><br/>
 		{% set buyerlist = item.Buyers %}
 		{% if buyerlist %}
