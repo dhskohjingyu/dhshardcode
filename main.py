@@ -275,20 +275,19 @@ class Interest(webapp2.RequestHandler):
 
 class Trade(webapp2.RequestHandler):
     def post(self):
-        user=user.get_current_user()
+        user = users.get_current_user()
         item_id = self.request.get('item_id')
-        buyer_id = self.requsest.get('buyer_id')
-        buyers = Items.get_by_key_name(buyer_id).Buyers[:]
-        item_name=Items.get_by_key_name(item_id).Title
-        Items.get_by_key_name(item_id).delete()
+        buyer_id = self.request.get('buyer_id')
+        buyers = Items.get_by_key_name(item_id).Buyers
+        item_name = Items.get_by_key_name(item_id).Title
         sell_items = User.get_by_key_name(user.email()).Sell_Items
         sell_items.remove(item_id)
         User(key_name = user.email(), Name = User.get_by_key_name(user.email()).Name ,Sell_Items = sell_items , Buy_Items=User.get_by_key_name(user.email()).Buy_Items).put()
         for buyer in buyers:
-            
             buy_items = User.get_by_key_name(buyer).Buy_Items
-            buy_items.remove(item_id)
-            User(key_name = user.email(), Name = User.get_by_key_name(user.email()).Name ,Sell_Items = User.get_by_key_name(user.email()).Sell_Items,Buy_Items=buy_items).put()
+            if item_id in buy_items:
+                buy_items.remove(item_id)
+                User(key_name = user.email(), Name = User.get_by_key_name(user.email()).Name ,Sell_Items = User.get_by_key_name(user.email()).Sell_Items,Buy_Items=buy_items).put()
         try:
             user_address = user.email()
             sender_address = "DHShardcode <hardcodedhs@gmail.com>"
@@ -307,7 +306,7 @@ class Trade(webapp2.RequestHandler):
         except: 
             pass
         
-            
+        Items.get_by_key_name(item_id).delete()    
         self.redirect('/profile')
         
 class Expired(webapp2.RequestHandler):
@@ -342,11 +341,11 @@ app = webapp2.WSGIApplication([
     ('/post_item', Post_Item),
     ('/post_item_confirmed', Post_Item_Confirmed),
     ('/item_detail', Item_Detail),
-    ('/profile',Profile),
-    ('/profileedit',Edit_Profile),
-    ('/item_delete',Delete_Item),
-    ('/deleteprofile',Delete_Profile),
-    ('/expired',Expired),
-    ('/interest',Interest),
-    ('/trade',Trade)
+    ('/profile', Profile),
+    ('/profileedit', Edit_Profile),
+    ('/item_delete', Delete_Item),
+    ('/deleteprofile', Delete_Profile),
+    ('/expired', Expired),
+    ('/interest', Interest),
+    ('/trade', Trade)
 ], debug=True)

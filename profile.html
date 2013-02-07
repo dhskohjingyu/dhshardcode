@@ -11,25 +11,27 @@
 	</form>
 
 	<br /><br />
-{% for i in sell_list %}
-	{% set item = Items.get_by_key_name(i) %}
-               <form method='post' action='/item_delete'>
-                    <b>Name: {{item.Title}}</b>
-                    <input type='text' name='key_name' value='{{item.Key_Date}}' style='display:none'>
-                    <button type='submit'>delete item</button>
-                <form><br/>
-    {% set buyerlist = item.Buyers %}
-	{% if buyerlist %}
-		<b> Buyers: </b>
-		{% for j in buyerlist %}
-			<form method='post' action='/trade'>
-			<b>{{j}}</b>
-			<input type='text' name='buyer_id' value='{i}' style='display:none'>
-			<input type='text' name='item_id' value='{j}' style='display:none'>
-			<button type='submit'>Trade!</button> <br/>
-		{% endfor %}
-	{% endif %}
-{% endfor %}
+{% if sell_list %}
+	{% for i in sell_list %}
+		{% set item = Items.get_by_key_name(i) %}
+	   <form method='post' action='/item_delete'>
+			<b>Name: {{item.Title}}</b>
+			<input type='text' name='key_name' value='{{item.Key_Date}}' style='display:none'>
+			<button type='submit'>delete item</button>
+		</form><br/>
+		{% set buyerlist = item.Buyers %}
+		{% if buyerlist %}
+			<b> Buyers: </b>
+			{% for j in buyerlist %}
+				<form method='post' action='/trade'>
+				<b>{{j}}</b>
+				<input type='text' name='buyer_id' value='{{j}}' style='display:none'>
+				<input type='text' name='item_id' value='{{i}}' style='display:none'>
+				<button type='submit'>Trade!</button> <br/></form>
+			{% endfor %}
+		{% endif %}
+	{% endfor %}
+{% endif %}
 
 <a href='/deleteprofile'>Delete Profile</a>
 
