@@ -12,6 +12,7 @@
 	</form>
 
 	<br /><br />
+	<h3>
 {% if sell_list %}
 	{% for i in sell_list %}
 		{% set item = Items.get_by_key_name(i) %}
@@ -33,6 +34,7 @@
 		{% endif %}
 	{% endfor %}
 {% endif %}
+	</h3>
 
 <a href='/deleteprofile'>Delete Profile</a>
 
