@@ -8,9 +8,6 @@ body { font-size: 62.5%; font-family: Helvetica, Arial, sans-serif; line-height:
 
 img { border: 0;}
 
-a { color: #3c86b7; text-decoration: none; }
-a:hover { text-decoration: underline; }
-
 ul { line-height: 120%; }
 
 p { font-size: 1.2em; line-height: 1.4em; font-family: Arial, sans-serif; color: #999; margin-bottom: 15px; }
