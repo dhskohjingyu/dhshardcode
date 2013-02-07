@@ -1,4 +1,3 @@
-// when the dom is ready...
 $(function() {
 
     var $cols = $('colgroup');
@@ -22,6 +21,6 @@ $(function() {
 
     $('table').mousedown(function()
 	{
-		/* Replace this shit with whatever you want the click to do */
+		/* Replace with whatever you want the click to do */
     })
 });
