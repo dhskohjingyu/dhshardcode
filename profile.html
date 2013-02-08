@@ -23,10 +23,10 @@
 		</form><br/>
 		{% set buyerlist = item.Buyers %}
 		{% if buyerlist %}
-			<p class="buyer_text"> Buyers: </p>
+			<b> Buyers: </b>
 			{% for j in buyerlist %}
 				<form method='post' action='/trade'>
-				<b>{{j}}</b>
+				<p class="buyer_text">{{j}}</p>
 				<input type='text' name='buyer_id' value='{{j}}' style='display:none'>
 				<input type='text' name='item_id' value='{{i}}' style='display:none'>
 				<button type='submit' class="blue-button">Trade!</button> <br/></form>
