@@ -7,7 +7,7 @@
 </head>
 <body>
 	<form method='post' action='/profileedit'>
-		<b>Nickname:</b> <input type='text' name='nickname' value='{{User.get_by_key_name(user.email()).Name |escape}}'>
+		<h3>Nickname:</h3> <input type='text' name='nickname' value='{{User.get_by_key_name(user.email()).Name |escape}}'>
 		<button type='submit' class="blue-button">Change</button>
 	</form>
 
@@ -17,7 +17,7 @@
 	{% for i in sell_list %}
 		{% set item = Items.get_by_key_name(i) %}
 	   <form method='post' action='/item_delete'>
-			<b>Name: {{item.Title}}</b>
+			<p class="item_text">Name: {{item.Title}}</p>
 			<input type='text' name='key_name' value='{{item.Key_Date}}' style='display:none'>
 			<button type='submit' class="red-button">Delete item</button>
 		</form><br/>
