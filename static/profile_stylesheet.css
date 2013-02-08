@@ -38,3 +38,9 @@ input[type=text] {
 	margin-top:5px;
 	padding-bottom: 4px;
 }
+
+.buyer_text
+{
+	color: #FFF;
+	font-size: 20px;
+}
