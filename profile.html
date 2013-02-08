@@ -23,7 +23,7 @@
 		</form><br/>
 		{% set buyerlist = item.Buyers %}
 		{% if buyerlist %}
-			<b> Buyers: </b>
+			<p class="buyer_text"> Buyers: </p>
 			{% for j in buyerlist %}
 				<form method='post' action='/trade'>
 				<b>{{j}}</b>
