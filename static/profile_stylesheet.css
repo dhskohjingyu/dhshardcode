@@ -15,6 +15,7 @@ body
 	font-size: 62.5%;
 	font-family: Helvetica, Arial, sans-serif;
 	line-height: 10%;
+	text-align: center;
 }
 
 img { border: 0;}
@@ -43,4 +44,10 @@ input[type=text] {
 {
 	color: #FFF;
 	font-size: 20px;
+}
+
+.item_text
+{
+	color: #FFF;
+	font-size: 24px;
 }
