@@ -1,50 +1,25 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<link rel="stylesheet" type="text/css" href="/static/profile_stylesheet.css"/>
 <link rel="stylesheet" type="text/css" href="/static/generic_stylesheet.css"/>
+<link rel="stylesheet" type="text/css" href="/static/profile_stylesheet.css"/>
 <title>Profile</title>
 </head>
 <body>
-	<div id="content" class="clearfix" align="center">
-		<section id="center" align="left">
-			<div id="userStats" class="clearfix">
-				<div class="pic">
-				    <img src="http://i.imgur.com/uM6gTer.gif" width="150" height="150" />
-				</div>
-				
-				<div class="data">
-					<form method='post' action='/profileedit'>
-						<b>nickname</b>
-						<input type='text' name='nickname' value='{{User.get_by_key_name(user.email()).Name |escape}}'>
-						<button type='submit' class="blue-button">change</button>
-					</form>
-					<h3>Singapore</h3>
-					<!--<h4><a href="http://dhs.sg/">http://dhs.sg/</a></h4>-->
-					<!--
-					<div class="socialMediaLinks">
-						<a href="http://twitter.com/hardcode" rel="me" target="_blank"><img src="img/twitter.png" alt="@jakerocheleau" /></a>
-						<a href="http://gowalla.com/users/hardcode" rel="me" target="_blank"><img src="img/gowalla.png" /></a>
-					</div>
-					-->
-					<div class="sep"></div>
-					<ul class="numbers clearfix">
-						<li>Items<strong>17</strong></li>
-						<li>Trades Completed<strong>99</strong></li>
-					</ul>
-				</div>
-			</div>
-			<h1>About Me:</h1>
-			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+	<form method='post' action='/profileedit'>
+		<b>Nickname:</b> <input type='text' name='nickname' value='{{User.get_by_key_name(user.email()).Name |escape}}'>
+		<button type='submit' class="blue-button">Change</button>
+	</form>
+
 	<br /><br />
-	<p>
+	<h3>
 {% if sell_list %}
 	{% for i in sell_list %}
 		{% set item = Items.get_by_key_name(i) %}
 	   <form method='post' action='/item_delete'>
 			<b>Name: {{item.Title}}</b>
 			<input type='text' name='key_name' value='{{item.Key_Date}}' style='display:none'>
-			<button type='submit' class="red-button">delete item</button>
+			<button type='submit' class="red-button">Delete item</button>
 		</form><br/>
 		{% set buyerlist = item.Buyers %}
 		{% if buyerlist %}
@@ -54,14 +29,12 @@
 				<b>{{j}}</b>
 				<input type='text' name='buyer_id' value='{{j}}' style='display:none'>
 				<input type='text' name='item_id' value='{{i}}' style='display:none'>
-				<button type='submit'>Trade!</button> <br/></form>
+				<button type='submit' class="blue-button">Trade!</button> <br/></form>
 			{% endfor %}
 		{% endif %}
 	{% endfor %}
 {% endif %}
-	</p>
-		</section>
-	</div>
+	</h3>
 
 <a href='/deleteprofile'>Delete Profile</a>
 
