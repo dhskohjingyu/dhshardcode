@@ -21,6 +21,10 @@ class Items(db.Model): #key_name = key_date
     Comments = db.ListProperty(str)
     Message_Time = db.StringProperty()
     Buyers = db.ListProperty(str)
+    Activated=db.BooleanProperty(default=True)
+
+
+    
 
 class User(db.Model): #key_name = email
     
@@ -118,6 +122,15 @@ class Delete_Item(webapp2.RequestHandler):
         User(key_name = user.email(), Name = name, Sell_Items = sell_list).put()
         Items.get_by_key_name(self.request.get('key_name')).delete()
         self.redirect('/profile')
+
+##class Delete_Item(webapp2.RequestHandler):
+##    def post(self):
+##        user=users.get_current_user()
+##        name = User.get_by_key_name(user.email()).Name
+##        sell_list = User.get_by_key_name(user.email()).Sell_Items
+##        sell_list.remove(self.request.get('key_name'))
+##        User(key_name = user.email(), Name = name, Sell_Items = sell_list).put()
+##        Items.get_by_key_name(self.request.get('key_name')).deactivate()
         
         
 class Edit_Profile(webapp2.RequestHandler):
@@ -146,7 +159,7 @@ class Post_Item_Confirmed(webapp2.RequestHandler):
         price = self.request.get("price")
         creation_date = str((datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%d %B %Y %I:%M %p"))
         key_date = str(datetime.datetime.now() + datetime.timedelta(hours=8))
-        Items(key_name = key_date, Buyers = [], Title = title, Description = description, Price = price, Seller = seller, Seller_Name = User.get_by_key_name(user.email()).Name, Creation_Date = creation_date, Key_Date = key_date).put()
+        Items(key_name = key_date, Buyers = [], Title = title, Description = description, Price = price, Seller = seller, Seller_Name = User.get_by_key_name(user.email()).Name, Creation_Date = creation_date, Key_Date = key_date, Activated = True).put()
         sell_list = User.get_by_key_name(user.email()).Sell_Items
         sell_list.append(key_date)
         nickname = User.get_by_key_name(user.email()).Name
@@ -332,7 +345,23 @@ class Expired(webapp2.RequestHandler):
             'data' :data,
             }
         template = jinja_environment.get_template('expired.html')
-        self.response.out.write(template.render(template_values))       
+        self.response.out.write(template.render(template_values))
+
+class Activation(webapp2.RequestHandler):
+        def post(self):
+            key_name = self.request.get("key_name")
+            user=users.get_current_user()
+            if Items.get_by_key_name(key_name).Activated:
+                Items(key_name = key_name, Buyers = Items.get_by_key_name(key_name).Buyers,Title = Items.get_by_key_name(key_name).Title, Description = Items.get_by_key_name(key_name).Description, \
+                      Price = Items.get_by_key_name(key_name).Price, Creation_Date = Items.get_by_key_name(key_name).Creation_Date, \
+                      Key_Date = Items.get_by_key_name(key_name).Key_Date, Seller = Items.get_by_key_name(key_name).Seller, Activated=False).put()
+            else:
+                Items(key_name = key_name, Buyers = Items.get_by_key_name(key_name).Buyers,Title = Items.get_by_key_name(key_name).Title, Description = Items.get_by_key_name(key_name).Description, \
+                      Price = Items.get_by_key_name(key_name).Price, Creation_Date = Items.get_by_key_name(key_name).Creation_Date, \
+                      Key_Date = Items.get_by_key_name(key_name).Key_Date, Seller = Items.get_by_key_name(key_name).Seller, Activated=True).put()
+
+            
+            self.redirect('/profile')
 
         
 app = webapp2.WSGIApplication([
@@ -347,5 +376,6 @@ app = webapp2.WSGIApplication([
     ('/deleteprofile', Delete_Profile),
     ('/expired', Expired),
     ('/interest', Interest),
-    ('/trade', Trade)
+    ('/trade', Trade),
+    ('/activation', Activation)
 ], debug=True)

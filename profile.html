@@ -20,7 +20,18 @@
 			<p class="item_text">Name: {{item.Title}}</p>
 			<input type='text' name='key_name' value='{{item.Key_Date}}' style='display:none'>
 			<button type='submit' class="red-button">Delete item</button>
-		</form><br/>
+		</form>
+		<form method='post' action='/activation'>
+			<input type='text' name='key_name' value='{{item.Key_Date}}' style='display:none'>
+			{% if item.Activated==True %}
+				<button type='submit' class="red-button">deactivate</button>
+			{% endif %}
+			{% if item.Activated==False %}
+				<button type='submit' class="red-button">activate</button>
+			{% endif %}
+				
+		</form> 
+		<br/>
 		{% set buyerlist = item.Buyers %}
 		{% if buyerlist %}
 			<b> Buyers: </b>

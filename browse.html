@@ -25,12 +25,15 @@
                                 </tr>
 
     {% for i in data %}
-    <tr><td> <form name="item_detail" action="/item_detail" method="get">
-    <input type="text" value= "{{i.Key_Date}}" name="key_name" style="display:none">
-    <button type="submit">{{i.Title}} </button> </form>  </td>
-    <td> {{i.Seller}}</td>
-    <td> {{i.Price}} </td>
-    <td> {{i.Creation_Date}} </td>
+		{% if i.Activated==True %}
+		
+		<tr><td> <form name="item_detail" action="/item_detail" method="get">
+		<input type="text" value= "{{i.Key_Date}}" name="key_name" style="display:none">
+		<button type="submit">{{i.Title}} </button> </form>  </td>
+		<td> {{i.Seller}}</td>
+		<td> {{i.Price}} </td>
+		<td> {{i.Creation_Date}} </td>
+		{% endif %}
     <!--
     <td><form name="item_detail" action="/item_detail" method="get">
     <input type="text" value= "{{i.Key_Date}}" name="key_name" style="display:none">
