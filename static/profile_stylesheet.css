@@ -10,6 +10,11 @@ html
 	background: #222;
 }
 
+.hover
+{
+	background-color: #eee;
+}
+
 body
 {
 	font-size: 62.5%;
@@ -25,7 +30,7 @@ ul { line-height: 120%; }
 p { font-size: 1.2em; line-height: 1.4em; font-family: Arial, sans-serif; color: #999; margin-bottom: 15px; }
 h1 { font-family: Helvetica, Arial, Verdana, sans-serif; color: #FFF; font-weight: bold; font-size: 1.7em; line-height: 2.0em; }
 h2 { font-family: Georgia, Tahoma, sans-serif; font-style: italic; font-size: 1.4em; letter-spacing: -0.04em; line-height: 1.8em; }
-h3 { color: #698216; font-weight: normal; font-size: 1.3em; line-height: 1.6em;  }
+h3 { color: #698216; font-weight: normal; font-size: 2em; line-height: 1.6em;  }
 h4 { color: #232323; font-family: Arial, Tahoma, sans-serif; font-size: 1.1em; line-height: 1.3em; margin-bottom: 10px; }
 
 input[type=text] {

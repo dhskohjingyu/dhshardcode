@@ -2,52 +2,67 @@
 <html>
 <head>
 <link rel="stylesheet" type="text/css" href="/static/generic_stylesheet.css"/>
-<link rel="stylesheet" type="text/css" href="/static/profile_stylesheet.css"/>
+<!--link rel="stylesheet" type="text/css" href="/static/profile_stylesheet.css"/-->
 <title>Profile</title>
 </head>
-<body>
+<body style="background-color:#222">
+	<div>
 	<form method='post' action='/profileedit'>
-		<h3>Nickname:</h3> <input type='text' name='nickname' value='{{User.get_by_key_name(user.email()).Name |escape}}'>
+		<font color = "white" size = "5">Nickname: </font><input type='text' name='nickname' value='{{User.get_by_key_name(user.email()).Name |escape}}'>
 		<button type='submit' class="blue-button">Change</button>
 	</form>
 
-	<br /><br />
-	<h3>
+	<table border="1" id="browse_table" bordercolor="#FFCC00" style="background-color:#FFFFCC" width="auto" cellpadding="3" cellspacing="0" align = 'center'>
+								<tr>
+								<td><b>Item name</b></td>
+                                <td><b>Delete Item</b></td>
+                                <td><b>Activate/Deactivate Item</b></td>
+                                <td><b>Interest List</b></td>
+                                </tr>
+
 {% if sell_list %}
 	{% for i in sell_list %}
 		{% set item = Items.get_by_key_name(i) %}
+		<tr>
 	   <form method='post' action='/item_delete'>
-			<p class="item_text">Name: {{item.Title}}</p>
-			<input type='text' name='key_name' value='{{item.Key_Date}}' style='display:none'>
-			<button type='submit' class="red-button">Delete item</button>
+			<td><p class="item_text">{{item.Title}}</p></td>
+			<td><input type='text' name='key_name' value='{{item.Key_Date}}' style='display:none'>
+			<button type='submit' class="red-button">Delete item</button></td>
 		</form>
 		<form method='post' action='/activation'>
-			<input type='text' name='key_name' value='{{item.Key_Date}}' style='display:none'>
+			<td><input type='text' name='key_name' value='{{item.Key_Date}}' style='display:none'>
 			{% if item.Activated==True %}
-				<button type='submit' class="red-button">deactivate</button>
+				<button type='submit' class="red-button">Deactivate</button> </td>
 			{% endif %}
 			{% if item.Activated==False %}
-				<button type='submit' class="red-button">activate</button>
+				<button type='submit' class="red-button">Activate</button> </td>
 			{% endif %}
 				
 		</form> 
-		<br/>
+
 		{% set buyerlist = item.Buyers %}
 		{% if buyerlist %}
-			<b> Buyers: </b>
-			{% for j in buyerlist %}
+			{% for j in buyerlist %}<td>
 				<form method='post' action='/trade'>
-				<p class="buyer_text">{{j}}</p>
+				<class="buyer_text">{{j}}
 				<input type='text' name='buyer_id' value='{{j}}' style='display:none'>
 				<input type='text' name='item_id' value='{{i}}' style='display:none'>
-				<button type='submit' class="blue-button">Trade!</button> <br/></form>
+				<button type='submit' class="blue-button">Trade!</button> </form></td>
 			{% endfor %}
+			{% else %}
+		<td> Nil </td>
 		{% endif %}
+
 	{% endfor %}
+
+{% else %}
+<p><font color= 'white'>You have no items on sale </font></p>
 {% endif %}
-	</h3>
+</div>
 
-<a href='/deleteprofile'>Delete Profile</a>
-
+<div align='left'>
+<p></p>
+<a href='/deleteprofile'>Delete Profile</a> <br/><br/>
+</div>
 </body>
 </html>
