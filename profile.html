@@ -11,6 +11,7 @@
 		<font color = "white" size = "5">Nickname: </font><input type='text' name='nickname' value='{{User.get_by_key_name(user.email()).Name |escape}}'>
 		<button type='submit' class="blue-button">Change</button>
 	</form>
+{% if sell_list %}
 
 	<table border="1" id="browse_table" bordercolor="#FFCC00" style="background-color:#FFFFCC" width="auto" cellpadding="3" cellspacing="0" align = 'center'>
 								<tr>
@@ -20,7 +21,6 @@
                                 <td><b>Interest List</b></td>
                                 </tr>
 
-{% if sell_list %}
 	{% for i in sell_list %}
 		{% set item = Items.get_by_key_name(i) %}
 		<tr>
