@@ -166,7 +166,7 @@ class Post_Item_Confirmed(webapp2.RequestHandler):
         User(key_name = user.email(), Sell_Items = sell_list, Name = nickname,Buy_Items = User.get_by_key_name(user.email()).Buy_Items).put()
         try:#mail
             user_address = user.email()
-            sender_address = "DHShardcode <hardcodedhs@gmail.com>"
+            sender_address = "DHShardcode <DHShardcode@dhshardcode.appspotmail.com>"
             subject = "[DHS HARDCODE]Your item has been created."
             body = ''' Your item has been created.
         Title: %s
@@ -174,6 +174,7 @@ class Post_Item_Confirmed(webapp2.RequestHandler):
         Price: %s
 
         Thank you for using our service.
+        Please do not directly reply to this email.
                         '''%(title, description, price)
             mail.send_mail(sender_address, user_address, subject, body)
             self.redirect("/browse")
@@ -217,7 +218,7 @@ class Item_Detail(webapp2.RequestHandler):
                   Key_Date = Items.get_by_key_name(key_name).Key_Date, Seller = Items.get_by_key_name(key_name).Seller, Comments = comments_list).put()
             
             user_address = Items.get_by_key_name(key_name).Seller.email()
-            sender_address = "DHShardcode <hardcodedhs@gmail.com>"
+            sender_address = "DHShardcode <DHShardcode@dhshardcode.appspotmail.com>"
             subject = "[DHS HARDCODE] %s commented on your item" %(user.email())
             body = '''%s commented on your item: %s
     Please visit dhshardcode.appspot.com to view your item.
@@ -276,7 +277,7 @@ class Interest(webapp2.RequestHandler):
                   Key_Date = Items.get_by_key_name(key_name).Key_Date, Seller = Items.get_by_key_name(key_name).Seller, Comments = Items.get_by_key_name(key_name).Comments).put()
         try:
             user_address = Items.get_by_key_name(key_name).Seller.email()
-            sender_address = "DHShardcode <hardcodedhs@gmail.com>"
+            sender_address = "DHShardcode <DHShardcode@dhshardcode.appspotmail.com>"
             subject = "[DHS HARDCODE] %s indicated interest on your item" %(user.email())
             body = '''%s indicated interest on your item: %s
         Please visit dhshardcode.appspot.com to view your item.
@@ -303,7 +304,7 @@ class Trade(webapp2.RequestHandler):
                 User(key_name = user.email(), Name = User.get_by_key_name(user.email()).Name ,Sell_Items = User.get_by_key_name(user.email()).Sell_Items,Buy_Items=buy_items).put()
         try:
             user_address = user.email()
-            sender_address = "DHShardcode <hardcodedhs@gmail.com>"
+            sender_address = "DHShardcode <DHShardcode@dhshardcode.appspotmail.com>"
             subject = "[DHS HARDCODE] you have decided to trade %s with %s " %(item_name,User.get_by_key_name(buyer_id).Name)
             body = '''Please contact him/ her via the following email address: %s''' %(buyer_id)
             mail.send_mail(sender_address, user_address, subject, body)
@@ -312,7 +313,7 @@ class Trade(webapp2.RequestHandler):
 
         try:
             user_address = buyer_id
-            sender_address = "DHShardcode <hardcodedhs@gmail.com>"
+            sender_address = "DHShardcode <DHShardcode@dhshardcode.appspotmail.com>"
             subject = "[DHS HARDCODE]  Seller %s have decided to trade %s with you! " %(User.get_by_key_name(user.email()).Name,item_name)
             body = '''Please contact him/ her via the following email address: %s''' %(user.email())
             mail.send_mail(sender_address, user_address, subject, body)
