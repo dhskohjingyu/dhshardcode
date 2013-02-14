@@ -8,13 +8,13 @@
 <body style="background-color:#222">
 	<div>
 	<form method='post' action='/profileedit'>
-		<font color = "white" size = "5">Nickname: </font><input type='text' name='nickname' value='{{User.get_by_key_name(user.email()).Name |escape}}'>
+		<font id="nickname">Nickname: </font><input type='text' name='nickname' value='{{User.get_by_key_name(user.email()).Name |escape}}'>
 		<button type='submit' class="blue-button">Change</button>
 	</form>
 {% if sell_list %}
 
 	<table border="1" id="browse_table" bordercolor="#FFCC00" style="background-color:#FFFFCC" width="auto" cellpadding="3" cellspacing="0" align = 'center'>
-								<tr>
+								<tr id="title">
 								<td><b>Item name</b></td>
                                 <td><b>Delete Item</b></td>
                                 <td><b>Activate/Deactivate Item</b></td>
