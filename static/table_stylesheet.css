@@ -3,3 +3,37 @@
 {
 	background-color: #eee;
 }
+
+input[type=text]
+{
+	font-family: Helvetica, Arial, Verdana, sans-serif;
+	color: #444;
+	font-weight: bold;
+	font-size: 17px;
+	height:25px;
+	margin-bottom:5px;
+	margin-top:5px;
+}
+
+body
+{
+	background-color: #333;
+}
+
+tr
+{
+	border-color: #666;
+
+	background-color: #777;
+	color: #FFF;
+	font-family: Helvetica, Arial, Verdana, sans-serif;
+}
+
+td
+{
+}
+
+table
+{
+	border-color: #444;
+}
