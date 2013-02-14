@@ -1,6 +1,7 @@
 <!DOCTYPE HTML>
 <head> 
 	<link rel="stylesheet" href="/static/table_stylesheet.css">
+	<link rel="stylesheet" href="/static/generic_stylesheet.css">
 	<script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js'></script>
 	<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.js"></script>
     <script type="text/javascript" src="/static/table_script.js"></script>
@@ -29,7 +30,7 @@
 		
 		<tr><td> <form name="item_detail" action="/item_detail" method="get">
 		<input type="text" value= "{{i.Key_Date}}" name="key_name" style="display:none">
-		<button type="submit">{{i.Title}} </button> </form>  </td>
+		<button type="submit" class="blue-button>{{i.Title}} </button> </form>  </td>
 		<td> {{i.Seller}}</td>
 		<td> {{i.Price}} </td>
 		<td> {{i.Creation_Date}} </td>
@@ -47,7 +48,7 @@
 
 <form method="get" action="/post_item">
 	{% if user %}
-                                <button type="submit">Post Item</button>
+                                <button type="submit"  class="red-button>Post Item</button>
                             </form>
                             {% endif %}
 
