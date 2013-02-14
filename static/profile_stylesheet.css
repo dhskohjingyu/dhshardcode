@@ -1,58 +1,41 @@
-/* global.css styles */
-
-/* @group resets and elements */
-* { margin: 0; padding: 0; }
-
-html
+input[type=text]
 {
-	height: 101%;
-	font-family: “Helvetica Neue”, Arial, Helvetica, sans-serif;
-	background: #222;
-}
-
-.hover
-{
-	background-color: #eee;
-}
-
-body
-{
-	font-size: 62.5%;
-	font-family: Helvetica, Arial, sans-serif;
-	line-height: 10%;
-	text-align: center;
-}
-
-img { border: 0;}
-
-ul { line-height: 120%; }
-
-p { font-size: 1.2em; line-height: 1.4em; font-family: Arial, sans-serif; color: #999; margin-bottom: 15px; }
-h1 { font-family: Helvetica, Arial, Verdana, sans-serif; color: #FFF; font-weight: bold; font-size: 1.7em; line-height: 2.0em; }
-h2 { font-family: Georgia, Tahoma, sans-serif; font-style: italic; font-size: 1.4em; letter-spacing: -0.04em; line-height: 1.8em; }
-h3 { color: #698216; font-weight: normal; font-size: 2em; line-height: 1.6em;  }
-h4 { color: #232323; font-family: Arial, Tahoma, sans-serif; font-size: 1.1em; line-height: 1.3em; margin-bottom: 10px; }
-
-input[type=text] {
 	font-family: Helvetica, Arial, Verdana, sans-serif;
 	color: #444;
 	font-weight: bold;
-	font-size: 1.7em;
-	line-height: 2.0em;
+	font-size: 17px;
 	height:25px;
 	margin-bottom:5px;
 	margin-top:5px;
-	padding-bottom: 4px;
 }
 
-.buyer_text
+#nickname
 {
+	font-family: Helvetica, Arial, Verdana, sans-serif;
 	color: #FFF;
-	font-size: 20px;
+	font-size: 17px;
+	font-weight: bold;
 }
 
-.item_text
+#title
 {
+	color: #333;
+}
+
+tr
+{
+	border-color: #666;
+
+	background-color: #777;
 	color: #FFF;
-	font-size: 24px;
+	font-family: Helvetica, Arial, Verdana, sans-serif;
+}
+
+td
+{
+}
+
+table
+{
+	border-color: #444;
 }
