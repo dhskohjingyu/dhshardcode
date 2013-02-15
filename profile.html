@@ -2,7 +2,10 @@
 <html>
 <head>
 <link rel="stylesheet" type="text/css" href="/static/generic_stylesheet.css"/>
-<!--link rel="stylesheet" type="text/css" href="/static/profile_stylesheet.css"/-->
+<link rel="stylesheet" type="text/css" href="/static/profile_stylesheet.css"/>
+
+<script src='http://code.jquery.com/jquery-1.8.1.min.js'></script>
+<script src='/static/profile_script.js'></script>
 <title>Profile</title>
 </head>
 <body style="background-color:#222">
@@ -43,11 +46,13 @@
 		{% set buyerlist = item.Buyers %}
 		{% if buyerlist %}
 			{% for j in buyerlist %}<td>
+            	<span>+</span><input type='text' name='buyer_id' value='{{j}}' style='display:none'>
+        		<div class="jqdemo">
 				<form method='post' action='/trade'>
 				<class="buyer_text">{{j}}
-				<input type='text' name='buyer_id' value='{{j}}' style='display:none'>
 				<input type='text' name='item_id' value='{{i}}' style='display:none'>
 				<button type='submit' class="blue-button">Trade!</button> </form></td>
+                </div>
 			{% endfor %}
 			{% else %}
 		<td> Nil </td>
