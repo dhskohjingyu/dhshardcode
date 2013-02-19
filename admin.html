@@ -1,6 +1,8 @@
 <!DOCTYPE HTML>
 <head>
-  <title>Admin's Console</title>
+	<link rel="stylesheet" href="/static/admin_stylesheet.css">
+	<link rel="stylesheet" href="/static/generic_stylesheet.css">
+	<title>Admin's Console</title>
 </head>
 
 <body>
@@ -18,7 +20,7 @@
 	<form method='post' action='/deleteprofile'>
 	<td><input type='text' name='user_email' value='{{person.Email}}' readonly></td>
 	<input type='text' name='redirect' value='/admin' style='display:none'>
-	<td><button type='submit'>Delete this profile</button></td>
+	<td><button type='submit' class="red-button">Delete this profile</button></td>
 	</form>
 	{% if person.Sell_Items %}                        
 	<td>
@@ -33,7 +35,7 @@
 			<input type='text' name='key_name' value='{{item.Key_Date}}' style='display:none'>
 			<input type='text' name='redirect' value='/admin' style='display:none'>
 			<input type='text' name='user_email' value='{{user.email()}}' style='display:none'>
-			<button type='submit'>Delete item</button>
+			<button type='submit' class="red-button">Delete item</button>
 			</form>
 		</td>
 	</tr>
