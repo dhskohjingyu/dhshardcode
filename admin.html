@@ -16,17 +16,14 @@
 {% for person in User.all() %}
 <tr>
 	<form method='post' action='/deleteprofile'>
-	<td><input type='text' name='user_email' value='{{person.Email}}'></td>
+	<td><input type='text' name='user_email' value='{{person.Email}}' readonly></td>
 	<input type='text' name='redirect' value='/admin' style='display:none'>
 	<td><button type='submit'>Delete this profile</button></td>
 	</form>
 	{% if person.Sell_Items %}                        
 	<td>
 	<table>
-	<tr>
-	<td>Item Name</td>
-	<td>Delete Item</td>
-	</tr>
+
 	{% for itemid in person.Sell_Items %}
 	{% set item = Items.get_by_key_name(itemid) %}
 	<tr>
