@@ -27,10 +27,11 @@ class Items(db.Model): #key_name = key_date
     
 
 class User(db.Model): #key_name = email
-    
-    Name = db.StringProperty()
-    Sell_Items = db.ListProperty(str)
-    Buy_Items = db.ListProperty(str)
+   
+	Email = db.StringProperty()
+	Name = db.StringProperty()
+	Sell_Items = db.ListProperty(str)
+	Buy_Items = db.ListProperty(str)
 
 class Login(webapp2.RequestHandler):
     def get(self):
@@ -67,7 +68,7 @@ class Browse(webapp2.RequestHandler):
                 usernick = User.get_by_key_name(user.email()).Name
                 login = ''
             else:
-                User(key_name = user.email(), Name = user.nickname()).put()
+                User(key_name = user.email(), Email = user.email(), Name = user.nickname()).put()
                 login = ''
                 usernick = User.get_by_key_name(user.email()).Name
                 
@@ -119,7 +120,7 @@ class Delete_Item(webapp2.RequestHandler):
         name = User.get_by_key_name(useremail).Name
         sell_list = User.get_by_key_name(useremail).Sell_Items
         sell_list.remove(self.request.get('key_name'))
-        User(key_name = useremail, Name = name, Sell_Items = sell_list).put()
+        User(key_name = useremail, Email = user.email(), Name = name, Sell_Items = sell_list, Buy_Items = User.get_by_key_name(user.email()).Buy_Items).put()
         Items.get_by_key_name(self.request.get('key_name')).delete()
         self.redirect('/profile')
 
@@ -136,7 +137,7 @@ class Delete_Item(webapp2.RequestHandler):
 class Edit_Profile(webapp2.RequestHandler):
     def post(self):
         user = users.get_current_user()
-        User(key_name = user.email(), Name = self.request.get('nickname'),Sell_Items = User.get_by_key_name(user.email()).Sell_Items,Buy_Items = User.get_by_key_name(user.email()).Buy_Items).put()
+        User(key_name = user.email(),Email = user.email(), Name = self.request.get('nickname'),Sell_Items = User.get_by_key_name(user.email()).Sell_Items,Buy_Items = User.get_by_key_name(user.email()).Buy_Items).put()
         self.redirect('/browse')
 
 
@@ -163,7 +164,7 @@ class Post_Item_Confirmed(webapp2.RequestHandler):
         sell_list = User.get_by_key_name(user.email()).Sell_Items
         sell_list.append(key_date)
         nickname = User.get_by_key_name(user.email()).Name
-        User(key_name = user.email(), Sell_Items = sell_list, Name = nickname,Buy_Items = User.get_by_key_name(user.email()).Buy_Items).put()
+        User(key_name = user.email(), Sell_Items = sell_list, Email = user.email(), Name = nickname,Buy_Items = User.get_by_key_name(user.email()).Buy_Items).put()
         try:#mail
             user_address = user.email()
             sender_address = "DHShardcode <DHShardcode@dhshardcode.appspotmail.com>"
@@ -271,7 +272,7 @@ class Interest(webapp2.RequestHandler):
         if not(user.email() in buyers):
             buyers.append(user.email())
             buy_items.append(key_name)
-            User(key_name = user.email(), Name = User.get_by_key_name(user.email()).Name ,Sell_Items = User.get_by_key_name(user.email()).Sell_Items,Buy_Items=buy_items).put()
+            User(key_name = user.email(), Email = user.email(),Name = User.get_by_key_name(user.email()).Name ,Sell_Items = User.get_by_key_name(user.email()).Sell_Items,Buy_Items=buy_items).put()
             Items(key_name =key_name , Buyers = buyers ,Title = Items.get_by_key_name(key_name).Title, Description = Items.get_by_key_name(key_name).Description, \
                   Price = Items.get_by_key_name(key_name).Price, Creation_Date = Items.get_by_key_name(key_name).Creation_Date, \
                   Key_Date = Items.get_by_key_name(key_name).Key_Date, Seller = Items.get_by_key_name(key_name).Seller, Comments = Items.get_by_key_name(key_name).Comments).put()
@@ -296,12 +297,12 @@ class Trade(webapp2.RequestHandler):
         item_name = Items.get_by_key_name(item_id).Title
         sell_items = User.get_by_key_name(user.email()).Sell_Items
         sell_items.remove(item_id)
-        User(key_name = user.email(), Name = User.get_by_key_name(user.email()).Name ,Sell_Items = sell_items , Buy_Items=User.get_by_key_name(user.email()).Buy_Items).put()
+        User(key_name = user.email(), Email = user.email(),Name = User.get_by_key_name(user.email()).Name ,Sell_Items = sell_items , Buy_Items=User.get_by_key_name(user.email()).Buy_Items).put()
         for buyer in buyers:
             buy_items = User.get_by_key_name(buyer).Buy_Items
             if item_id in buy_items:
                 buy_items.remove(item_id)
-                User(key_name = user.email(), Name = User.get_by_key_name(user.email()).Name ,Sell_Items = User.get_by_key_name(user.email()).Sell_Items,Buy_Items=buy_items).put()
+                User(key_name = user.email(), Email = user.email(),Name = User.get_by_key_name(user.email()).Name ,Sell_Items = User.get_by_key_name(user.email()).Sell_Items,Buy_Items=buy_items).put()
         try:
             user_address = user.email()
             sender_address = "DHShardcode <DHShardcode@dhshardcode.appspotmail.com>"
@@ -376,12 +377,13 @@ class Admin(webapp2.RequestHandler):
                         <td>item</td>
                         
                     </tr>''')
-            for user in User.all():
+            for person in User.all():
                 self.response.out.write('''
                     <tr>
                         <form method='post' action='/deleteprofile'>
                             <td><input type='text' name='user_email' value='%s'></td>
-                            <input type='text' name='redirect' value='/admin' style='display:none'>
+                            <input type='text' name='redirect' value='/admin' style='display:none'>
+
                             <td><button type='submit'>Delete his profile</button></td>
                         </form>
                         <td>
@@ -390,8 +392,10 @@ class Admin(webapp2.RequestHandler):
                                     <td>Item Name</td>
                                     <td>Delete Item</td>
                                 </tr>
-                        '''%(user.)
-                for itemid in user.Sell_Items:
+                        '''%(person.Email))
+                for itemid in person.Sell_Items:
+
+                    print itemid
                     item=Items.get_by_key_name(itemid)
                     self.response.out.write('''
                         <tr>
@@ -403,7 +407,8 @@ class Admin(webapp2.RequestHandler):
                                     <input type='text' name='user_email' value='%s' style='display:none'>
                                     <button type='submit'>Delete item</button>
                                 </form>
-                            </td></tr>'''%(item.Key_Date,user.email()))
+                            </td>
+                        </tr>'''%(item.Title,item.Key_Date,user.email()))
                 
                 self.response.out.write(''' </table></td>''')   
                 
