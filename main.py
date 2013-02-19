@@ -103,23 +103,23 @@ class Profile(webapp2.RequestHandler):
         self.response.out.write(template.render(template_values))
 
 class Delete_Profile(webapp2.RequestHandler):
-    def get(self):
-        user=users.get_current_user()
+    def post(self):
+        useremail=self.request.get('user_email')
         for i in Items.all():
             
-            if i.Seller.email() == user.email() :
+            if i.Seller.email() == useremail :
                 Items.get_by_key_name(i.Key_Date).delete()
-        User.get_by_key_name(user.email()).delete()        
-        self.redirect("/")
+        User.get_by_key_name(useremail).delete()        
+        self.redirect(self.request.get('redirect'))
         
         
 class Delete_Item(webapp2.RequestHandler):
     def post(self):
-        user=users.get_current_user()
-        name = User.get_by_key_name(user.email()).Name
-        sell_list = User.get_by_key_name(user.email()).Sell_Items
+        useremail=self.request.get('user_email')
+        name = User.get_by_key_name(useremail).Name
+        sell_list = User.get_by_key_name(useremail).Sell_Items
         sell_list.remove(self.request.get('key_name'))
-        User(key_name = user.email(), Name = name, Sell_Items = sell_list).put()
+        User(key_name = useremail, Name = name, Sell_Items = sell_list).put()
         Items.get_by_key_name(self.request.get('key_name')).delete()
         self.redirect('/profile')
 

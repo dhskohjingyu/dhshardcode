@@ -30,6 +30,8 @@
 	   <form method='post' action='/item_delete'>
 			<td><p class="item_text">{{item.Title}}</p></td>
 			<td><input type='text' name='key_name' value='{{item.Key_Date}}' style='display:none'>
+			<input type='text' name='redirect' value='/profile' style='display:none'>
+			<input type='text' name='user_email' value='{{user.email()}}' style='display:none'>
 			<button type='submit' class="red-button">Delete item</button></td>
 		</form>
 		<form method='post' action='/activation'>
@@ -67,7 +69,11 @@
 
 <div align='left'>
 <p></p>
-<a href='/deleteprofile'>Delete Profile</a> <br/><br/>
+<form method='post' action='/deleteprofile'>
+	<input type='text' name='user_email' value='{{user.email()}}' style='display:none'>
+	<input type='text' name='redirect' value='/' style='display:none'>
+	<button type='submit' class='blue-button'>Delete Profile!</button>
+</form>
 </div>
 </body>
 </html>
