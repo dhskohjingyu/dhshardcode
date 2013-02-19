@@ -1,0 +1,22 @@
+h1
+{
+  color: #FFF;
+  font-weight: bold;
+	font-size: 23px;
+}
+
+input[type=text]
+{
+	font-family: Helvetica, Arial, Verdana, sans-serif;
+	color: #444;
+	font-weight: bold;
+	font-size: 17px;
+	height:25px;
+	margin-bottom:5px;
+	margin-top:5px;
+}
+
+body
+{
+	background-color: #333;
+}
