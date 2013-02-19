@@ -364,6 +364,53 @@ class Activation(webapp2.RequestHandler):
             
             self.redirect('/profile')
 
+class Admin(webapp2.RequestHandler):
+    def get(self):
+        user=users.get_current_user()
+        if user and users.is_current_user_admin():
+            self.response.out.write('''
+                <table>
+                    <tr>
+                        <td>user</td>
+                        <td>delete user</td>
+                        <td>item</td>
+                        
+                    </tr>''')
+            for user in User.all():
+                self.response.out.write('''
+                    <tr>
+                        <form method='post' action='/deleteprofile'>
+                            <td><input type='text' name='user_email' value='%s'></td>
+                            <input type='text' name='redirect' value='/admin' style='display:none'>
+                            <td><button type='submit'>Delete his profile</button></td>
+                        </form>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td>Item Name</td>
+                                    <td>Delete Item</td>
+                                </tr>
+                        '''%(user.)
+                for itemid in user.Sell_Items:
+                    item=Items.get_by_key_name(itemid)
+                    self.response.out.write('''
+                        <tr>
+                            <td>%s</td>
+                            <td>
+                                <form method='post' action='/item_delete'>
+                                    <input type='text' name='key_name' value='%s' style='display:none'>
+                                    <input type='text' name='redirect' value='/admin' style='display:none'>
+                                    <input type='text' name='user_email' value='%s' style='display:none'>
+                                    <button type='submit'>Delete item</button>
+                                </form>
+                            </td></tr>'''%(item.Key_Date,user.email()))
+                
+                self.response.out.write(''' </table></td>''')   
+                
+                        
+                            
+                
+
         
 app = webapp2.WSGIApplication([
     ('/', Login),
@@ -378,5 +425,6 @@ app = webapp2.WSGIApplication([
     ('/expired', Expired),
     ('/interest', Interest),
     ('/trade', Trade),
-    ('/activation', Activation)
+    ('/activation', Activation),
+    ('/admin',Admin)
 ], debug=True)
