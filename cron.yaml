@@ -1,0 +1,4 @@
+cron:
+- description: check for and delete expired items
+  url: /expired
+  schedule: every 5 minutes

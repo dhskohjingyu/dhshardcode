@@ -413,7 +413,30 @@ class Admin(webapp2.RequestHandler):
                 self.response.out.write(''' </table></td>''')   
                 
                         
-                            
+class Expired(webapp2.RequestHandler):
+    def get(self):
+        user=users.get_current_user()
+        data=Items.all()
+        today_date=datetime.datetime.today()
+        month_list={'January':1,'February':2,'March':3,'April':4,'May':5,
+            'June':6,'July':7,'August':8,'September':9,'October':10,
+            'November':11,'December':12}
+
+        for i in data:
+            creation_date=i.Creation_Date.split()
+            #convert string back to date format
+            creation_date=creation_date[0]+'-'+str(month_list[creation_date[1]])+'-'+creation_date[2]
+            creation_date=datetime.datetime.strptime(creation_date,'%d-%m-%Y')
+            #set expired date to 30 day after creation date
+            expired_date=creation_date+datetime.timedelta(days=1)
+            if today_date>expired_date:
+                i.delete()
+        
+        template_values = {
+            'data' :data,
+            }
+        template = jinja_environment.get_template('expired.html')
+        self.response.out.write(template.render(template_values))                             
                 
 
         
@@ -431,5 +454,6 @@ app = webapp2.WSGIApplication([
     ('/interest', Interest),
     ('/trade', Trade),
     ('/activation', Activation),
+    ('/expired', Expired),
     ('/admin',Admin)
 ], debug=True)
