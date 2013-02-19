@@ -1,14 +1,16 @@
 <!DOCTYPE HTML>
 <head>
+	<link rel="stylesheet" href="/static/postitem_stylesheet.css">
+	<link rel="stylesheet" href="/static/generic_stylesheet.css">
 	<title> Post Item </title>
 </head>
 <body>
 <form name="item" action="/post_item_confirmed" method="post">
-	Item: <input type="text" name="title" value = "{{escape}}"><br>
-	Description: <input type="text" name="description" value = "{{escape}}"><br>
-	Price: <input type="number" name="price" value = "{{escape}}"><br>
+	<h1>Item: </h1><input type="text" name="title" value = "{{escape}}"><br>
+	<h1>Description: </h1><input type="text" name="description" value = "{{escape}}"><br>
+	<h1>Price: </h1><input type="number" name="price" value = "{{escape}}"><br>
 	
-	<input type="submit" />
+	<input type="submit" class="red-button" />
 
 </form>
 </body>
