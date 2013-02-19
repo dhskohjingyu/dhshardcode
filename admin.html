@@ -1,0 +1,61 @@
+<!DOCTYPE HTML>
+<head>
+  <title>Admin's Console</title>
+</head>
+
+<body>
+{% if user and users.is_current_user_admin() %}
+
+<table>
+	<tr>
+		<td>User</td>
+		<td>Delete user</td>
+		<td>Item</td>
+	</tr>
+
+{% for person in User.all() %}
+<tr>
+	<form method='post' action='/deleteprofile'>
+	<td><input type='text' name='user_email' value='{{person.Email}}'></td>
+	<input type='text' name='redirect' value='/admin' style='display:none'>
+	<td><button type='submit'>Delete this profile</button></td>
+	</form>
+	{% if person.Sell_Items == True %}                        
+	<td>
+	<table>
+	<tr>
+	<td>Item Name</td>
+	<td>Delete Item</td>
+	</tr>
+	{% for itemid in person.Sell_Items %}
+	{% set item = Items.get_by_key_name(itemid) %}
+	<tr>
+	<td>{{item.Title}}</td>
+			<td>
+			<form method='post' action='/item_delete'>
+			<input type='text' name='key_name' value='{{item.Key_Date}}' style='display:none'>
+			<input type='text' name='redirect' value='/admin' style='display:none'>
+			<input type='text' name='user_email' value='{{user.email()}}' style='display:none'>
+			<button type='submit'>Delete item</button>
+			</form>
+		</td>
+	</tr>
+	{% endfor %}
+
+	{% else %}
+	<td><table><tr>
+    <td>	N/A </td>
+</tr>
+
+	{%endif%}
+
+
+</table>
+
+
+
+{% endfor %}
+</table>
+{% endif %}
+</body>
+</html>
