@@ -12,6 +12,12 @@
  	{% if user %}
  	<h1> Hi {{usernick}}! </h1>
 	<a href='/profile'>Profile</a>
+ 	{% if is_admin %}
+	<a href='/admin'>Admin Panel</a>
+	{% endif %}
+ 	{% else %}
+ 	<h1> Hi guest! </h1>
+ 	{% endif %}
  	<br>
  	{% else %}
  	<h1> Hi guest! </h1>
