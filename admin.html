@@ -18,9 +18,10 @@
 {% for person in User.all() %}
 <tr>
 	<form method='post' action='/deleteprofile'>
-	<td><input type='text' name='user_email' value='{{person.Email}}' readonly></td>
+	<td>{{person.Name}}</td>
+	<input type='text' name='user_email' value='{{person.Email}}' style='display:none'>
 	<input type='text' name='redirect' value='/admin' style='display:none'>
-	<td><button type='submit' class="red-button">Delete this profile</button></td>
+	<td><button type='submit' class="red-button">Delete profile</button></td>
 	</form>
 	{% if person.Sell_Items %}                        
 	<td>
