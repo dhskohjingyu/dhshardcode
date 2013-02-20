@@ -117,6 +117,7 @@ class Delete_Profile(webapp2.RequestHandler):
         
 class Delete_Item(webapp2.RequestHandler):
     def post(self):
+        user = users.get_current_user()
         useremail=self.request.get('user_email')
         name = User.get_by_key_name(useremail).Name
         sell_list = User.get_by_key_name(useremail).Sell_Items
@@ -168,7 +169,7 @@ class Post_Item_Confirmed(webapp2.RequestHandler):
         User(key_name = user.email(), Sell_Items = sell_list, Email = user.email(), Name = nickname,Buy_Items = User.get_by_key_name(user.email()).Buy_Items).put()
         try:#mail
             user_address = user.email()
-            sender_address = "DHShardcode <DHShardcode@dhshardcode.appspotmail.com>"
+            sender_address = "DHShardcode <noreply@dhshardcode.appspotmail.com>"
             subject = "[DHS HARDCODE]Your item has been created."
             body = ''' Your item has been created.
         Title: %s
@@ -220,11 +221,12 @@ class Item_Detail(webapp2.RequestHandler):
                   Key_Date = Items.get_by_key_name(key_name).Key_Date, Seller = Items.get_by_key_name(key_name).Seller, Comments = comments_list).put()
             
             user_address = Items.get_by_key_name(key_name).Seller.email()
-            sender_address = "DHShardcode <DHShardcode@dhshardcode.appspotmail.com>"
+            sender_address = "DHShardcode <noreply@dhshardcode.appspotmail.com>"
             subject = "[DHS HARDCODE] %s commented on your item" %(user.email())
             body = '''%s commented on your item: %s
     Please visit dhshardcode.appspot.com to view your item.
-    Thank you for using our service.''' %(user.email(), comment)
+    Thank you for using our service.
+    Please do not directly reply to this email.''' %(user.email(), comment)
             mail.send_mail(sender_address, user_address, subject, body)
             if key_name in User.get_by_key_name(user.email()).Sell_Items:
                 not_seller = False
@@ -279,11 +281,12 @@ class Interest(webapp2.RequestHandler):
                   Key_Date = Items.get_by_key_name(key_name).Key_Date, Seller = Items.get_by_key_name(key_name).Seller, Comments = Items.get_by_key_name(key_name).Comments).put()
         try:
             user_address = Items.get_by_key_name(key_name).Seller.email()
-            sender_address = "DHShardcode <DHShardcode@dhshardcode.appspotmail.com>"
+            sender_address = "DHShardcode <noreply@dhshardcode.appspotmail.com>"
             subject = "[DHS HARDCODE] %s indicated interest on your item" %(user.email())
             body = '''%s indicated interest on your item: %s
         Please visit dhshardcode.appspot.com to view your item.
-        Thank you for using our service.''' %(user.email(), Items.get_by_key_name(key_name).Title)
+        Thank you for using our service.
+        Please do not directly reply to this email.''' %(user.email(), Items.get_by_key_name(key_name).Title)
             mail.send_mail(sender_address, user_address, subject, body)
         except:
             pass
@@ -306,7 +309,7 @@ class Trade(webapp2.RequestHandler):
                 User(key_name = user.email(), Email = user.email(),Name = User.get_by_key_name(user.email()).Name ,Sell_Items = User.get_by_key_name(user.email()).Sell_Items,Buy_Items=buy_items).put()
         try:
             user_address = user.email()
-            sender_address = "DHShardcode <DHShardcode@dhshardcode.appspotmail.com>"
+            sender_address = "DHShardcode <noreply@dhshardcode.appspotmail.com>"
             subject = "[DHS HARDCODE] you have decided to trade %s with %s " %(item_name,User.get_by_key_name(buyer_id).Name)
             body = '''Please contact him/ her via the following email address: %s''' %(buyer_id)
             mail.send_mail(sender_address, user_address, subject, body)
@@ -315,7 +318,7 @@ class Trade(webapp2.RequestHandler):
 
         try:
             user_address = buyer_id
-            sender_address = "DHShardcode <DHShardcode@dhshardcode.appspotmail.com>"
+            sender_address = "DHShardcode <noreply@dhshardcode.appspotmail.com>"
             subject = "[DHS HARDCODE]  Seller %s have decided to trade %s with you! " %(User.get_by_key_name(user.email()).Name,item_name)
             body = '''Please contact him/ her via the following email address: %s''' %(user.email())
             mail.send_mail(sender_address, user_address, subject, body)
