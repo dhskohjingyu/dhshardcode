@@ -54,7 +54,7 @@
 		<tr><td> <form name="item_detail" action="/item_detail" method="get">
 		<input type="text" value= "{{i.Key_Date}}" name="key_name" style="display:none">
 		<button type="submit" class="blue-button">{{i.Title}} </button> </form>  </td>
-		<td> {{i.Seller_Name}}</td>
+		<td> {{i.Seller.nickname()}}</td>
 		<td> {{i.Price}} </td>
 		<td> {{i.Creation_Date}} </td>
 		{% endif %}

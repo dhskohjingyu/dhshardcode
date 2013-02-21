@@ -12,7 +12,7 @@
 </head>
 <body style="background-color:#222">
 	<div>
-	<form method='post' action='/profileedit'>
+	<form method='post' action='/profileedit' align='center'>
 		<font id="nickname">Nickname: </font><input type='text' name='nickname' value='{{User.get_by_key_name(user.email()).Name |escape}}'>
 		<button type='submit' class="blue-button">Change</button>
 	</form>
@@ -21,6 +21,9 @@
 	<table border="1" id="browse_table" bordercolor="#FFCC00" style="background-color:#FFFFCC" width="auto" cellpadding="3" cellspacing="0" align = 'center'>
 								<tr id="title">
 								<td><b>Item name</b></td>
+								<td><b>Price</b></td>
+								<td><b>Description</b></td>
+								<td><b>Update Item</b></td>
                                 <td><b>Delete Item</b></td>
                                 <td><b>Activate/Deactivate Item</b></td>
                                 <td><b>Interest List</b></td>
@@ -29,13 +32,20 @@
 	{% for i in sell_list %}
 		{% set item = Items.get_by_key_name(i) %}
 		<tr>
-	   <form method='post' action='/item_delete'>
-			<td><p class="item_text">{{item.Title}}</p></td>
-			<td><input type='text' name='key_name' value='{{item.Key_Date}}' style='display:none'>
+			<form method='post' action='/item_update'>
+				<td><input type='text' name='item_name' value='{{item.Title}}'></td>
+				<td><input type='text' name='item_price' value='{{item.Price}}'></td>
+				<td><input type='text' name='description' value='{{item.Description}}'></td>
+				<input type='text' name='key_name' value='{{item.Key_Date}}' style='display:none'>
+				<td><button type='submit' class="red-button">Update item</button>
+			</form>
+			<td><form method='post' action='/item_delete'>
+			<input type='text' name='key_name' value='{{item.Key_Date}}' style='display:none'>
 			<input type='text' name='redirect' value='/profile' style='display:none'>
 			<input type='text' name='user_email' value='{{user.email()}}' style='display:none'>
-			<button type='submit' class="red-button">Delete item</button></td>
-		</form>
+			<button type='submit' class="red-button">Delete item</button></form>
+			</td>
+		
 		<form method='post' action='/activation'>
 			<td><input type='text' name='key_name' value='{{item.Key_Date}}' style='display:none'>
 			{% if item.Activated==True %}

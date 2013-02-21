@@ -205,7 +205,7 @@ class Post_Item_Confirmed(webapp2.RequestHandler):
             price = self.request.get("price")
             creation_date = str((datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%d %B %Y %I:%M %p"))
             key_date = str(datetime.datetime.now() + datetime.timedelta(hours=8))
-            Items(key_name = key_date, Buyers = [], Title = title, Description = description, Price = price, Seller = seller, Seller_Name = User.get_by_key_name(user.email()).Name, Creation_Date = creation_date, Key_Date = key_date, Activated = True).put()
+            Items(key_name = key_date, Buyers = [], Title = title, Description = description, Activated=True, Price = price, Seller = seller, Seller_Name = User.get_by_key_name(user.email()).Name, Creation_Date = creation_date, Key_Date = key_date).put()
             sell_list = User.get_by_key_name(user.email()).Sell_Items
             sell_list.append(key_date)
             nickname = User.get_by_key_name(user.email()).Name
@@ -335,7 +335,7 @@ class Interest(webapp2.RequestHandler):
                 User(key_name = user.email(), Email = user.email(),Name = User.get_by_key_name(user.email()).Name ,Sell_Items = User.get_by_key_name(user.email()).Sell_Items,Buy_Items=buy_items).put()
                 Items(key_name =key_name , Buyers = buyers ,Title = Items.get_by_key_name(key_name).Title, Description = Items.get_by_key_name(key_name).Description, \
                       Price = Items.get_by_key_name(key_name).Price, Creation_Date = Items.get_by_key_name(key_name).Creation_Date, \
-                      Key_Date = Items.get_by_key_name(key_name).Key_Date, Seller = Items.get_by_key_name(key_name).Seller, Comments = Items.get_by_key_name(key_name).Comments).put()
+                      Key_Date = Items.get_by_key_name(key_name).Key_Date, Activated =Items.get_by_key_name(key_name).Activated, Seller = Items.get_by_key_name(key_name).Seller, Comments = Items.get_by_key_name(key_name).Comments).put()
             try:
                 user_address = Items.get_by_key_name(key_name).Seller.email()
                 sender_address = "DHShardcode <noreply@dhshardcode.appspotmail.com>"
@@ -459,7 +459,32 @@ class Admin(webapp2.RequestHandler):
             self.response.out.write(template.render(template_values))
         else:
             self.redirect("/error")
-                        
+
+class Update_Item(webapp2.RequestHandler):
+    def post(self):
+        user = users.get_current_user()
+        key_name = self.request.get('key_name')
+        item=Items.get_by_key_name(key_name)
+        if item.Price != self.request.get('item_price'):
+            new_buyers=[]
+            for buyer in item.Buyers:
+                
+                try:
+                    user_address = buyer
+                    sender_address = "DHShardcode <noreply@dhshardcode.appspotmail.com>"
+                    subject = "[DHS HARDCODE] Price Change from Seller "
+                    body = '''The seller %s has decided to change the price of item %s from %s to %s, please indicate your interset again.''' %(item.Seller,item.Title,item.Price,\
+                                                                                                                                                self.request.get('item_price'))
+                    mail.send_mail(sender_address, user_address, subject, body)
+                except: 
+                    pass
+        else:
+            new_buyers = item.Buyers
+        Items(key_name = key_name , Buyers = new_buyers ,Title = self.request.get('item_name'), Description = self.request.get('description'), \
+                      Price = self.request.get('item_price'), Creation_Date = Items.get_by_key_name(key_name).Creation_Date, \
+                      Key_Date = Items.get_by_key_name(key_name).Key_Date, Seller = Items.get_by_key_name(key_name).Seller,Activated =Items.get_by_key_name(key_name).Activated,  Comments = Items.get_by_key_name(key_name).Comments).put()
+        
+        self.redirect('/profile')                    
 class Expired(webapp2.RequestHandler):
     def get(self):
         user=users.get_current_user()
@@ -502,5 +527,6 @@ app = webapp2.WSGIApplication([
     ('/activation', Activation),
     ('/expired', Expired),
     ('/admin',Admin),
-    ('/error',Error)
+    ('/error',Error),
+    ('/item_update',Update_Item)
 ], debug=True)
