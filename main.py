@@ -145,7 +145,7 @@ class Delete_Item(webapp2.RequestHandler):
         Log(key_name = str(datetime.datetime.now() + datetime.timedelta(hours=8)),Type = 'Delete Item', \
                     Time = str(datetime.datetime.now() + datetime.timedelta(hours=8)), \
                     UserID =  user.email(), ItemID = self.request.get('key_name') ).put()
-        self.redirect('/profile')
+        self.redirect(self.request.get('redirect')
 
 
 class Edit_Profile(webapp2.RequestHandler):
@@ -205,17 +205,13 @@ class Item_Detail(webapp2.RequestHandler):
     def get(self):
         user = users.get_current_user()
         key_name = self.request.get("key_name")
-        if user:
-            if key_name in User.get_by_key_name(user.email()).Sell_Items:
-                not_seller = False
-            else:
-                not_seller = True
-            if user.email() in Items.get_by_key_name(key_name).Buyers:
-                not_buyer = False
-            else:
-                not_buyer = True
+        if key_name in User.get_by_key_name(user.email()).Sell_Items:
+            not_seller = False
         else:
             not_seller = True
+        if user.email() in Items.get_by_key_name(key_name).Buyers:
+            not_buyer = False
+        else:
             not_buyer = True
 
         template_values = {
