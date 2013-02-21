@@ -11,6 +11,7 @@
 <body>
 {% if user and users.is_current_user_admin() %}
 
+<div  align="center">
 <table>
 	<tr>
 		<td>User</td>
@@ -59,6 +60,7 @@
 
 {% endfor %}
 </table>
+</div>
 {% endif %}
 </body>
 </html>
