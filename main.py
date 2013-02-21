@@ -33,6 +33,16 @@ class User(db.Model): #key_name = email
 	Sell_Items = db.ListProperty(str)
 	Buy_Items = db.ListProperty(str)
 
+
+class Log(db.Model):
+
+    Type = db.StringProperty()
+    Time = db.StringProperty()
+    UserID = db.StringProperty()
+    ItemID = db.StringProperty()
+    RecipientID = db.StringProperty()
+    
+    
 class Login(webapp2.RequestHandler):
     def get(self):
         user = users.get_current_user()
@@ -69,6 +79,9 @@ class Browse(webapp2.RequestHandler):
                 login = ''
             else:
                 User(key_name = user.email(), Email = user.email(), Name = user.nickname()).put()
+                Log(key_name = str(datetime.datetime.now() + datetime.timedelta(hours=8)),Type = 'CREATE USER', \
+                    Time = str(datetime.datetime.now() + datetime.timedelta(hours=8)), \
+                    UserID =  user.email()).put()
                 login = ''
                 usernick = User.get_by_key_name(user.email()).Name
                 
@@ -111,7 +124,10 @@ class Delete_Profile(webapp2.RequestHandler):
             
             if i.Seller.email() == useremail :
                 Items.get_by_key_name(i.Key_Date).delete()
-        User.get_by_key_name(useremail).delete()        
+        User.get_by_key_name(useremail).delete()
+        Log(key_name = str(datetime.datetime.now() + datetime.timedelta(hours=8)),Type = 'Delete Profile', \
+                    Time = str(datetime.datetime.now() + datetime.timedelta(hours=8)), \
+                    UserID =  user.email()).put()
         self.redirect(self.request.get('redirect'))
         
         
@@ -124,6 +140,9 @@ class Delete_Item(webapp2.RequestHandler):
         sell_list.remove(self.request.get('key_name'))
         User(key_name = useremail, Email = user.email(), Name = name, Sell_Items = sell_list, Buy_Items = User.get_by_key_name(user.email()).Buy_Items).put()
         Items.get_by_key_name(self.request.get('key_name')).delete()
+        Log(key_name = str(datetime.datetime.now() + datetime.timedelta(hours=8)),Type = 'Delete Item', \
+                    Time = str(datetime.datetime.now() + datetime.timedelta(hours=8)), \
+                    UserID =  user.email(), ItemID = self.request.get('key_name') ).put()
         self.redirect('/profile')
 
 ##class Delete_Item(webapp2.RequestHandler):
@@ -141,7 +160,7 @@ class Edit_Profile(webapp2.RequestHandler):
         user = users.get_current_user()
         User(key_name = user.email(),Email = user.email(), Name = self.request.get('nickname'),Sell_Items = User.get_by_key_name(user.email()).Sell_Items,Buy_Items = User.get_by_key_name(user.email()).Buy_Items).put()
         self.redirect('/browse')
-
+        
 
 
 class Post_Item(webapp2.RequestHandler):
@@ -150,8 +169,9 @@ class Post_Item(webapp2.RequestHandler):
 
             }
         template = jinja_environment.get_template('postitem.html')
+        
         self.response.out.write(template.render(template_values))
-
+        
 
 class Post_Item_Confirmed(webapp2.RequestHandler):
     def post(self):
@@ -167,6 +187,9 @@ class Post_Item_Confirmed(webapp2.RequestHandler):
         sell_list.append(key_date)
         nickname = User.get_by_key_name(user.email()).Name
         User(key_name = user.email(), Sell_Items = sell_list, Email = user.email(), Name = nickname,Buy_Items = User.get_by_key_name(user.email()).Buy_Items).put()
+        Log(key_name = str(datetime.datetime.now() + datetime.timedelta(hours=8)),Type = 'Post Item', \
+                    Time = str(datetime.datetime.now() + datetime.timedelta(hours=8)), \
+                    UserID =  user.email(), ItemID = key_date ).put()
         try:#mail
             user_address = user.email()
             sender_address = "DHShardcode <noreply@dhshardcode.appspotmail.com>"
@@ -181,6 +204,7 @@ class Post_Item_Confirmed(webapp2.RequestHandler):
                         '''%(title, description, price)
             mail.send_mail(sender_address, user_address, subject, body)
             self.redirect("/browse")
+
         except:
             self.redirect("/browse")
 
@@ -290,6 +314,9 @@ class Interest(webapp2.RequestHandler):
             mail.send_mail(sender_address, user_address, subject, body)
         except:
             pass
+        Log(key_name = str(datetime.datetime.now() + datetime.timedelta(hours=8)),Type = 'Indicate Interest', \
+                    Time = str(datetime.datetime.now() + datetime.timedelta(hours=8)), \
+                    UserID =  user.email(), ItemID = key_name, RecipientID = Items.get_by_key_name(key_name).Seller ).put()
         self.redirect('/item_detail?key_name=%s' % key_name)
 
 class Trade(webapp2.RequestHandler):
@@ -325,7 +352,10 @@ class Trade(webapp2.RequestHandler):
         except: 
             pass
         
-        Items.get_by_key_name(item_id).delete()    
+        Items.get_by_key_name(item_id).delete()
+        Log(key_name = str(datetime.datetime.now() + datetime.timedelta(hours=8)),Type = 'Trade', \
+                    Time = str(datetime.datetime.now() + datetime.timedelta(hours=8)), \
+                    UserID =  user.email(), ItemID = item_id, RecipientID = buyer_id ).put()
         self.redirect('/profile')
         
 class Expired(webapp2.RequestHandler):
@@ -406,11 +436,7 @@ class Expired(webapp2.RequestHandler):
             if today_date>expired_date:
                 i.delete()
         
-        template_values = {
-            'data' :data,
-            }
-        template = jinja_environment.get_template('expired.html')
-        self.response.out.write(template.render(template_values))                             
+                      
                 
 
         
