@@ -212,13 +212,17 @@ class Item_Detail(webapp2.RequestHandler):
     def get(self):
         user = users.get_current_user()
         key_name = self.request.get("key_name")
-        if key_name in User.get_by_key_name(user.email()).Sell_Items:
-            not_seller = False
+        if user:
+            if key_name in User.get_by_key_name(user.email()).Sell_Items:
+                not_seller = False
+            else:
+                not_seller = True
+            if user.email() in Items.get_by_key_name(key_name).Buyers:
+                not_buyer = False
+            else:
+                not_buyer = True
         else:
             not_seller = True
-        if user.email() in Items.get_by_key_name(key_name).Buyers:
-            not_buyer = False
-        else:
             not_buyer = True
 
         template_values = {
