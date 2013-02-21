@@ -136,7 +136,9 @@ class Delete_Item(webapp2.RequestHandler):
         user = users.get_current_user()
         useremail=self.request.get('user_email')
         name = User.get_by_key_name(useremail).Name
+
         sell_list = User.get_by_key_name(useremail).Sell_Items
+
         sell_list.remove(self.request.get('key_name'))
         User(key_name = useremail, Email = user.email(), Name = name, Sell_Items = sell_list, Buy_Items = User.get_by_key_name(user.email()).Buy_Items).put()
         Items.get_by_key_name(self.request.get('key_name')).delete()
@@ -145,16 +147,7 @@ class Delete_Item(webapp2.RequestHandler):
                     UserID =  user.email(), ItemID = self.request.get('key_name') ).put()
         self.redirect('/profile')
 
-##class Delete_Item(webapp2.RequestHandler):
-##    def post(self):
-##        user=users.get_current_user()
-##        name = User.get_by_key_name(user.email()).Name
-##        sell_list = User.get_by_key_name(user.email()).Sell_Items
-##        sell_list.remove(self.request.get('key_name'))
-##        User(key_name = user.email(), Name = name, Sell_Items = sell_list).put()
-##        Items.get_by_key_name(self.request.get('key_name')).deactivate()
-        
-        
+
 class Edit_Profile(webapp2.RequestHandler):
     def post(self):
         user = users.get_current_user()
