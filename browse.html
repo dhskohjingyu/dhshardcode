@@ -9,7 +9,17 @@
 	<title>Marketplace</title>
  </head>
  <body>
- <div class="sidebar"></div>
+ <div class="sidebar">
+ 	 {% if user %}
+	<div class="button">
+	<a href='/profile'>Profile</a>
+	</div>
+ 	{% if is_admin %}
+ 	<div class="button">
+	<a href='/admin'>Admin Panel</a>
+	</div>
+	{% endif %}
+ </div>
  
  <div class="main">
  	{% if user %}
@@ -26,7 +36,7 @@
  	<br>
  	<div id = "page-wrap">
 	<input type="text" id="search" placeholder="Search" />
- 	<table border="1" id="browse_table" bordercolor="#FFCC00" style="background-color:#FFFFCC" width="100%" cellpadding="3" cellspacing="0"><tr id="browse_header"> 
+ 	<table border="1" id="browse_table" bordercolor="#FFCC00" style="background-color:#FFFFCC" width="85%" cellpadding="3" cellspacing="0"><tr id="browse_header"> 
                                 <td><b>Title</b></td>
                                 <td><b>Seller</b></td>
                                 <td><b>Price</b></td>
