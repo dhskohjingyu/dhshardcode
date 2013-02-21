@@ -1,3 +1,49 @@
+.main
+{
+	width: 89%;
+	height: 100%;
+	
+	padding-left: 3%;
+	
+	position: absolute;
+	left: 8%;
+	top: 0px;
+	
+	display: block;
+	
+	background-color: #333;
+	
+		/*Shadow*/
+	/*horizontal offset, vertical offset, blur radius (optional), spread radius (optional), color*/
+	box-shadow: -5px 0px 15px 1px #333;
+	-webkit-box-shadow: -5px 0px 15px 1px #333;
+	-moz-box-shadow: -5px 0px 15px 1px #333;
+}
+
+.sidebar
+{
+	width: 8%;
+	height: 100%;
+	
+	position: fixed;
+	left: 0px;
+	top: 0px;
+	
+	z-index: -1;
+	
+	display: block;
+	
+	background-color: #e7e8e9;
+	
+	/*Shadow*/
+	/*horizontal offset, vertical offset, blur radius (optional), spread radius (optional), color*/
+	/*
+	box-shadow: inset -7px 0px 15px -7px #000000;
+	-webkit-box-shadow: inset -7px 0px 15px -7px #000000;
+	-moz-box-shadow: inset -7px 0px 15px -7px #000000;
+	*/
+}
+
 a {
 	border-radius: 3px;
 	border: 1px solid #972f22;
