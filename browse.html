@@ -9,6 +9,9 @@
 	<title>Marketplace</title>
  </head>
  <body>
+ <div class="sidebar"></div>
+ 
+ <div class="main">
  	{% if user %}
  	<h1> Hi {{usernick}}! </h1>
 	<a href='/profile'>Profile</a>
@@ -57,4 +60,6 @@
                                 <button type="submit"  class="red-button">Post Item</button>
                             </form>
                             {% endif %}
-
+</div>
+</body>
+</html>
