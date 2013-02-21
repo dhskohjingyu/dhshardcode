@@ -13,11 +13,14 @@
  <div class="sidebar">
  	 {% if user %}
 	<div class="button">
-	<a href='/profile'>Profile</a>
+	<a href='/profile'><img src="/static/profile.png"/></a>
+	</div>
+ 	<div class="button">
+	<a href='/logout'><img src="/static/logout.png"/></a>
 	</div>
  	{% if is_admin %}
  	<div class="button">
-	<a href='/admin'>Admin Panel</a>
+	<a href='/admin'><img src="/static/adminpanel.png"/></a>
 	</div>
 	{% endif %}
  </div>
