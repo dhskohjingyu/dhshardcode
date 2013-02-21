@@ -49,8 +49,10 @@
 
 		{% set buyerlist = item.Buyers %}
 		{% if buyerlist %}
+		<!--
             	<span>+</span>
         	<div class="jqdemo">
+        	-->
             	{% for j in buyerlist %}<td>
             	<input type='text' name='buyer_id' value='{{j}}' style='display:none'>
 				<form method='post' action='/trade'>
@@ -58,7 +60,7 @@
 				<input type='text' name='item_id' value='{{i}}' style='display:none'>
 				<button type='submit' class="blue-button">Trade!</button> </form></td>
 			{% endfor %}
-                </div>
+                <!--</div>-->
 			{% else %}
 		<td> Nil </td>
 		{% endif %}
