@@ -7,11 +7,17 @@ $(function() {
         var i = $(this).prevAll('td').length;
         $(this).parent().addClass('hover')
         $($cols[i]).addClass('hover');
+        
+        var $tableChild = $($cols[i] + " table");
+        $tableChild.addClass('hover');
     }).live('mouseout', function()
 	{
         var i = $(this).prevAll('td').length;
         $(this).parent().removeClass('hover');
         $($cols[i]).removeClass('hover');
+        
+        var $tableChild = $($cols[i] + " table");
+        $tableChild.removeClass('hover');
     })
     
     $('table').mouseleave(function()
