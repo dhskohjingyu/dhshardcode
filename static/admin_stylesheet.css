@@ -1,7 +1,9 @@
+
+
 h1
 {
-  color: #FFF;
-  font-weight: bold;
+	color: #FFF;
+	font-weight: bold;
 	font-size: 23px;
 }
 
@@ -19,4 +21,22 @@ input[type=text]
 body
 {
 	background-color: #333;
+}
+
+tr
+{
+	border-color: #666;
+
+	background-color: #777;
+	color: #FFF;
+	font-family: Helvetica, Arial, Verdana, sans-serif;
+}
+
+td
+{
+}
+
+table
+{
+	border-color: #444;
 }
