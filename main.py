@@ -313,7 +313,7 @@ class Interest(webapp2.RequestHandler):
             pass
         Log(key_name = str(datetime.datetime.now() + datetime.timedelta(hours=8)),Type = 'Indicate Interest', \
                     Time = str(datetime.datetime.now() + datetime.timedelta(hours=8)), \
-                    UserID =  user.email(), ItemID = key_name, RecipientID = Items.get_by_key_name(key_name).Seller ).put()
+                    UserID =  user.email(), ItemID = key_name, RecipientID = Items.get_by_key_name(key_name).Seller_Name ).put()
         self.redirect('/item_detail?key_name=%s' % key_name)
 
 class Trade(webapp2.RequestHandler):
