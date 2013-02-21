@@ -120,6 +120,7 @@ class Profile(webapp2.RequestHandler):
 class Delete_Profile(webapp2.RequestHandler):
     def post(self):
         useremail=self.request.get('user_email')
+        user = users.get_current_user()
         for i in Items.all():
             
             if i.Seller.email() == useremail :
@@ -145,7 +146,7 @@ class Delete_Item(webapp2.RequestHandler):
         Log(key_name = str(datetime.datetime.now() + datetime.timedelta(hours=8)),Type = 'Delete Item', \
                     Time = str(datetime.datetime.now() + datetime.timedelta(hours=8)), \
                     UserID =  user.email(), ItemID = self.request.get('key_name') ).put()
-        self.redirect('/profile')
+        self.redirect(self.request.get("redirect"))
 
 
 class Edit_Profile(webapp2.RequestHandler):
