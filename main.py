@@ -97,6 +97,7 @@ class Browse(webapp2.RequestHandler):
             'login' : login,
             'User' : User,
             'is_admin' : is_admin,
+            'users':users,
             }
         
         template = jinja_environment.get_template('browse.html')
@@ -105,102 +106,132 @@ class Browse(webapp2.RequestHandler):
 class Profile(webapp2.RequestHandler):
     def get(self):
         user = users.get_current_user()
-        sell_list = User.get_by_key_name(user.email()).Sell_Items
+        if user:
+            sell_list = User.get_by_key_name(user.email()).Sell_Items
 
-        template_values = {
-            'user':user,
-            'User':User,
-            'sell_list':sell_list,
-            'Items':Items,
-            }
-        
-        template = jinja_environment.get_template('profile.html')
-        self.response.out.write(template.render(template_values))
+            template_values = {
+                'user':user,
+                'User':User,
+                'sell_list':sell_list,
+                'Items':Items,
+                }
+            
+            template = jinja_environment.get_template('profile.html')
+            self.response.out.write(template.render(template_values))
+        else:
+            self.redirect("/error")
 
 class Delete_Profile(webapp2.RequestHandler):
     def post(self):
         useremail=self.request.get('user_email')
-        user = users.get_current_user()
-        for i in Items.all():
-            
-            if i.Seller.email() == useremail :
-                Items.get_by_key_name(i.Key_Date).delete()
-        User.get_by_key_name(useremail).delete()
-        Log(key_name = str(datetime.datetime.now() + datetime.timedelta(hours=8)),Type = 'Delete Profile', \
-                    Time = str(datetime.datetime.now() + datetime.timedelta(hours=8)), \
-                    UserID =  user.email()).put()
-        self.redirect(self.request.get('redirect'))
+        if user:
+            user = users.get_current_user()
+            for i in Items.all():
+                
+                if i.Seller.email() == useremail :
+                    Items.get_by_key_name(i.Key_Date).delete()
+            User.get_by_key_name(useremail).delete()
+            Log(key_name = str(datetime.datetime.now() + datetime.timedelta(hours=8)),Type = 'Delete Profile', \
+                        Time = str(datetime.datetime.now() + datetime.timedelta(hours=8)), \
+                        UserID =  user.email()).put()
+            self.redirect(self.request.get('redirect'))
+        else:
+            self.redirect("/error")
         
         
 class Delete_Item(webapp2.RequestHandler):
     def post(self):
         user = users.get_current_user()
-        useremail=self.request.get('user_email')
-        name = User.get_by_key_name(useremail).Name
+        if users.is_current_user_admin():
+            useremail=self.request.get('user_email')
+            name = User.get_by_key_name(Items.get_by_key_name(self.request.get("key_name")).Seller.email()).Name
 
-        sell_list = User.get_by_key_name(useremail).Sell_Items
+            sell_list = User.get_by_key_name(Items.get_by_key_name(self.request.get("key_name")).Seller.email()).Sell_Items
 
-        sell_list.remove(self.request.get('key_name'))
-        User(key_name = useremail, Email = user.email(), Name = name, Sell_Items = sell_list, Buy_Items = User.get_by_key_name(user.email()).Buy_Items).put()
-        Items.get_by_key_name(self.request.get('key_name')).delete()
-        Log(key_name = str(datetime.datetime.now() + datetime.timedelta(hours=8)),Type = 'Delete Item', \
-                    Time = str(datetime.datetime.now() + datetime.timedelta(hours=8)), \
-                    UserID =  user.email(), ItemID = self.request.get('key_name') ).put()
-        self.redirect(self.request.get("redirect"))
+            sell_list.remove(self.request.get('key_name'))
+            User(key_name = Items.get_by_key_name(self.request.get("key_name")).Seller.email(), Email = Items.get_by_key_name(self.request.get("key_name")).Seller.email(), Name = name, Sell_Items = sell_list, Buy_Items = User.get_by_key_name(Items.get_by_key_name(self.request.get("key_name")).Seller.email()).Buy_Items).put()
+            Items.get_by_key_name(self.request.get('key_name')).delete()
+            Log(key_name = str(datetime.datetime.now() + datetime.timedelta(hours=8)),Type = 'Delete Item', \
+                        Time = str(datetime.datetime.now() + datetime.timedelta(hours=8)), \
+                        UserID =  user.email(), ItemID = self.request.get('key_name') ).put()
+            self.redirect(self.request.get("redirect"))
+        elif user:
+            useremail=self.request.get('user_email')
+            name = User.get_by_key_name(useremail).Name
+
+            sell_list = User.get_by_key_name(useremail).Sell_Items
+
+            sell_list.remove(self.request.get('key_name'))
+            User(key_name = useremail, Email = user.email(), Name = name, Sell_Items = sell_list, Buy_Items = User.get_by_key_name(user.email()).Buy_Items).put()
+            Items.get_by_key_name(self.request.get('key_name')).delete()
+            Log(key_name = str(datetime.datetime.now() + datetime.timedelta(hours=8)),Type = 'Delete Item', \
+                        Time = str(datetime.datetime.now() + datetime.timedelta(hours=8)), \
+                        UserID =  user.email(), ItemID = self.request.get('key_name') ).put()
+            self.redirect(self.request.get("redirect"))
+        else:
+            self.redirect("/error")
 
 
 class Edit_Profile(webapp2.RequestHandler):
     def post(self):
         user = users.get_current_user()
-        User(key_name = user.email(),Email = user.email(), Name = self.request.get('nickname'),Sell_Items = User.get_by_key_name(user.email()).Sell_Items,Buy_Items = User.get_by_key_name(user.email()).Buy_Items).put()
-        self.redirect('/browse')
-        
+        if user:
+            User(key_name = user.email(),Email = user.email(), Name = self.request.get('nickname'),Sell_Items = User.get_by_key_name(user.email()).Sell_Items,Buy_Items = User.get_by_key_name(user.email()).Buy_Items).put()
+            self.redirect('/browse')
+        else:
+            self.redirect("/error")
 
 
 class Post_Item(webapp2.RequestHandler):
     def get(self):
-        template_values = {
+        if user:
+            template_values = {
 
-            }
-        template = jinja_environment.get_template('postitem.html')
-        
-        self.response.out.write(template.render(template_values))
+                }
+            template = jinja_environment.get_template('postitem.html')
+            
+            self.response.out.write(template.render(template_values))
+        else:
+            self.redirect("/error")
         
 
 class Post_Item_Confirmed(webapp2.RequestHandler):
     def post(self):
         user = users.get_current_user()
-        seller = user
-        title = self.request.get("title")
-        description = self.request.get("description")
-        price = self.request.get("price")
-        creation_date = str((datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%d %B %Y %I:%M %p"))
-        key_date = str(datetime.datetime.now() + datetime.timedelta(hours=8))
-        Items(key_name = key_date, Buyers = [], Title = title, Description = description, Price = price, Seller = seller, Seller_Name = User.get_by_key_name(user.email()).Name, Creation_Date = creation_date, Key_Date = key_date, Activated = True).put()
-        sell_list = User.get_by_key_name(user.email()).Sell_Items
-        sell_list.append(key_date)
-        nickname = User.get_by_key_name(user.email()).Name
-        User(key_name = user.email(), Sell_Items = sell_list, Email = user.email(), Name = nickname,Buy_Items = User.get_by_key_name(user.email()).Buy_Items).put()
-        Log(key_name = str(datetime.datetime.now() + datetime.timedelta(hours=8)),Type = 'Post Item', \
-                    Time = str(datetime.datetime.now() + datetime.timedelta(hours=8)), \
-                    UserID =  user.email(), ItemID = key_date ).put()
-        try:#mail
-            user_address = user.email()
-            sender_address = "DHShardcode <noreply@dhshardcode.appspotmail.com>"
-            subject = "[DHS HARDCODE]Your item has been created."
-            body = ''' Your item has been created.
-        Title: %s
-        Description: %s
-        Price: %s
+        if user:
+            seller = user
+            title = self.request.get("title")
+            description = self.request.get("description")
+            price = self.request.get("price")
+            creation_date = str((datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%d %B %Y %I:%M %p"))
+            key_date = str(datetime.datetime.now() + datetime.timedelta(hours=8))
+            Items(key_name = key_date, Buyers = [], Title = title, Description = description, Price = price, Seller = seller, Seller_Name = User.get_by_key_name(user.email()).Name, Creation_Date = creation_date, Key_Date = key_date, Activated = True).put()
+            sell_list = User.get_by_key_name(user.email()).Sell_Items
+            sell_list.append(key_date)
+            nickname = User.get_by_key_name(user.email()).Name
+            User(key_name = user.email(), Sell_Items = sell_list, Email = user.email(), Name = nickname,Buy_Items = User.get_by_key_name(user.email()).Buy_Items).put()
+            Log(key_name = str(datetime.datetime.now() + datetime.timedelta(hours=8)),Type = 'Post Item', \
+                        Time = str(datetime.datetime.now() + datetime.timedelta(hours=8)), \
+                        UserID =  user.email(), ItemID = key_date ).put()
+            try:#mail
+                user_address = user.email()
+                sender_address = "DHShardcode <noreply@dhshardcode.appspotmail.com>"
+                subject = "[DHS HARDCODE]Your item has been created."
+                body = ''' Your item has been created.
+            Title: %s
+            Description: %s
+            Price: %s
 
-        Thank you for using our service.
-        Please do not directly reply to this email.
-                        '''%(title, description, price)
-            mail.send_mail(sender_address, user_address, subject, body)
-            self.redirect("/browse")
+            Thank you for using our service.
+            Please do not directly reply to this email.
+                            '''%(title, description, price)
+                mail.send_mail(sender_address, user_address, subject, body)
+                self.redirect("/browse")
 
-        except:
-            self.redirect("/browse")
+            except:
+                self.redirect("/browse")
+        else:
+            self.redirect("/error")
 
 class Item_Detail(webapp2.RequestHandler):
     def get(self):
@@ -231,129 +262,139 @@ class Item_Detail(webapp2.RequestHandler):
 
             
     def post(self):
-        try: #email (just in case mail exceeds the daily quota of 100 )
-            user = users.get_current_user()
-            key_name = self.request.get("key_name")
-            comment = user.nickname() + """ says: """ + self.request.get("comment") #needs more efficient way of storing comments
-            comments_list = Items.get_by_key_name(key_name).Comments
-            comments_list.append(comment)
-            Items(key_name = key_name, Buyers = Items.get_by_key_name(key_date).Buyers,Title = Items.get_by_key_name(key_name).Title, Description = Items.get_by_key_name(key_name).Description, \
-                  Price = Items.get_by_key_name(key_name).Price, Creation_Date = Items.get_by_key_name(key_name).Creation_Date, \
-                  Key_Date = Items.get_by_key_name(key_name).Key_Date, Seller = Items.get_by_key_name(key_name).Seller, Comments = comments_list).put()
-            
-            user_address = Items.get_by_key_name(key_name).Seller.email()
-            sender_address = "DHShardcode <noreply@dhshardcode.appspotmail.com>"
-            subject = "[DHS HARDCODE] %s commented on your item" %(user.email())
-            body = '''%s commented on your item: %s
-    Please visit dhshardcode.appspot.com to view your item.
-    Thank you for using our service.
-    Please do not directly reply to this email.''' %(user.email(), comment)
-            mail.send_mail(sender_address, user_address, subject, body)
-            if key_name in User.get_by_key_name(user.email()).Sell_Items:
-                not_seller = False
-            else:
-                not_seller = True
-            if user.email() in Items.get_by_key_name(key_name).Buyers:
-                not_buyer = False
-            else:
-                not_buyer = True
+        user = users.get_current_user()
+        if user:
+            try: #email (just in case mail exceeds the daily quota of 100 )
+                
+                key_name = self.request.get("key_name")
+                comment = user.nickname() + """ says: """ + self.request.get("comment") #needs more efficient way of storing comments
+                comments_list = Items.get_by_key_name(key_name).Comments
+                comments_list.append(comment)
+                Items(key_name = key_name, Buyers = Items.get_by_key_name(key_date).Buyers,Title = Items.get_by_key_name(key_name).Title, Description = Items.get_by_key_name(key_name).Description, \
+                      Price = Items.get_by_key_name(key_name).Price, Creation_Date = Items.get_by_key_name(key_name).Creation_Date, \
+                      Key_Date = Items.get_by_key_name(key_name).Key_Date, Seller = Items.get_by_key_name(key_name).Seller, Comments = comments_list).put()
+                
+                user_address = Items.get_by_key_name(key_name).Seller.email()
+                sender_address = "DHShardcode <noreply@dhshardcode.appspotmail.com>"
+                subject = "[DHS HARDCODE] %s commented on your item" %(user.email())
+                body = '''%s commented on your item: %s
+        Please visit dhshardcode.appspot.com to view your item.
+        Thank you for using our service.
+        Please do not directly reply to this email.''' %(user.email(), comment)
+                mail.send_mail(sender_address, user_address, subject, body)
+                if key_name in User.get_by_key_name(user.email()).Sell_Items:
+                    not_seller = False
+                else:
+                    not_seller = True
+                if user.email() in Items.get_by_key_name(key_name).Buyers:
+                    not_buyer = False
+                else:
+                    not_buyer = True
 
-        except:
-            user = users.get_current_user()
-            key_name = self.request.get("key_name")
-            comment = user.nickname() + """ says: """ + self.request.get("comment") #needs more efficient way of storing comments
-            comments_list = Items.get_by_key_name(key_name).Comments
-            comments_list.append(comment)
-            Items(key_name = key_name, Buyers = Items.get_by_key_name(key_name).Buyers,Title = Items.get_by_key_name(key_name).Title, Description = Items.get_by_key_name(key_name).Description, \
-                  Price = Items.get_by_key_name(key_name).Price, Creation_Date = Items.get_by_key_name(key_name).Creation_Date, \
-                  Key_Date = Items.get_by_key_name(key_name).Key_Date, Seller = Items.get_by_key_name(key_name).Seller, Comments = comments_list).put()
-            if key_name in User.get_by_key_name(user.email()).Sell_Items:
-                not_seller = False
-            else:
-                not_seller = True
-            if user.email() in Items.get_by_key_name(key_name).Buyers:
-                not_buyer = False
-            else:
-                not_buyer = True
+            except:
+                user = users.get_current_user()
+                key_name = self.request.get("key_name")
+                comment = user.nickname() + """ says: """ + self.request.get("comment") #needs more efficient way of storing comments
+                comments_list = Items.get_by_key_name(key_name).Comments
+                comments_list.append(comment)
+                Items(key_name = key_name, Buyers = Items.get_by_key_name(key_name).Buyers,Title = Items.get_by_key_name(key_name).Title, Description = Items.get_by_key_name(key_name).Description, \
+                      Price = Items.get_by_key_name(key_name).Price, Creation_Date = Items.get_by_key_name(key_name).Creation_Date, \
+                      Key_Date = Items.get_by_key_name(key_name).Key_Date, Seller = Items.get_by_key_name(key_name).Seller, Comments = comments_list).put()
+                if key_name in User.get_by_key_name(user.email()).Sell_Items:
+                    not_seller = False
+                else:
+                    not_seller = True
+                if user.email() in Items.get_by_key_name(key_name).Buyers:
+                    not_buyer = False
+                else:
+                    not_buyer = True
 
-        template_values = {
-		'user':user,
-                'key_name':key_name,
-                'Items':Items,
-                'not_seller':not_seller,
-                'not_buyer':not_buyer,
-	}
- 
-        template = jinja_environment.get_template('itemdetail.html')
-        self.response.out.write(template.render(template_values))
+            template_values = {
+                    'user':user,
+                    'key_name':key_name,
+                    'Items':Items,
+                    'not_seller':not_seller,
+                    'not_buyer':not_buyer,
+            }
+     
+            template = jinja_environment.get_template('itemdetail.html')
+            self.response.out.write(template.render(template_values))
+        else:
+            self.redirect("/error")
 
 class Interest(webapp2.RequestHandler):
     def post(self):
         user = users.get_current_user()
-        key_name = self.request.get('key_name')
-        buyers = Items.get_by_key_name(key_name).Buyers
-        buy_items = User.get_by_key_name(user.email()).Buy_Items
-        if not(user.email() in buyers):
-            buyers.append(user.email())
-            buy_items.append(key_name)
-            User(key_name = user.email(), Email = user.email(),Name = User.get_by_key_name(user.email()).Name ,Sell_Items = User.get_by_key_name(user.email()).Sell_Items,Buy_Items=buy_items).put()
-            Items(key_name =key_name , Buyers = buyers ,Title = Items.get_by_key_name(key_name).Title, Description = Items.get_by_key_name(key_name).Description, \
-                  Price = Items.get_by_key_name(key_name).Price, Creation_Date = Items.get_by_key_name(key_name).Creation_Date, \
-                  Key_Date = Items.get_by_key_name(key_name).Key_Date, Seller = Items.get_by_key_name(key_name).Seller, Comments = Items.get_by_key_name(key_name).Comments).put()
-        try:
-            user_address = Items.get_by_key_name(key_name).Seller.email()
-            sender_address = "DHShardcode <noreply@dhshardcode.appspotmail.com>"
-            subject = "[DHS HARDCODE] %s indicated interest on your item" %(user.email())
-            body = '''%s indicated interest on your item: %s
-        Please visit dhshardcode.appspot.com to view your item.
-        Thank you for using our service.
-        Please do not directly reply to this email.''' %(user.email(), Items.get_by_key_name(key_name).Title)
-            mail.send_mail(sender_address, user_address, subject, body)
-        except:
-            pass
-        Log(key_name = str(datetime.datetime.now() + datetime.timedelta(hours=8)),Type = 'Indicate Interest', \
-                    Time = str(datetime.datetime.now() + datetime.timedelta(hours=8)), \
-                    UserID =  user.email(), ItemID = key_name, RecipientID = Items.get_by_key_name(key_name).Seller_Name ).put()
-        self.redirect('/item_detail?key_name=%s' % key_name)
+        if user:
+            key_name = self.request.get('key_name')
+            buyers = Items.get_by_key_name(key_name).Buyers
+            buy_items = User.get_by_key_name(user.email()).Buy_Items
+            if not(user.email() in buyers):
+                buyers.append(user.email())
+                buy_items.append(key_name)
+                User(key_name = user.email(), Email = user.email(),Name = User.get_by_key_name(user.email()).Name ,Sell_Items = User.get_by_key_name(user.email()).Sell_Items,Buy_Items=buy_items).put()
+                Items(key_name =key_name , Buyers = buyers ,Title = Items.get_by_key_name(key_name).Title, Description = Items.get_by_key_name(key_name).Description, \
+                      Price = Items.get_by_key_name(key_name).Price, Creation_Date = Items.get_by_key_name(key_name).Creation_Date, \
+                      Key_Date = Items.get_by_key_name(key_name).Key_Date, Seller = Items.get_by_key_name(key_name).Seller, Comments = Items.get_by_key_name(key_name).Comments).put()
+            try:
+                user_address = Items.get_by_key_name(key_name).Seller.email()
+                sender_address = "DHShardcode <noreply@dhshardcode.appspotmail.com>"
+                subject = "[DHS HARDCODE] %s indicated interest on your item" %(user.email())
+                body = '''%s indicated interest on your item: %s
+            Please visit dhshardcode.appspot.com to view your item.
+            Thank you for using our service.
+            Please do not directly reply to this email.''' %(user.email(), Items.get_by_key_name(key_name).Title)
+                mail.send_mail(sender_address, user_address, subject, body)
+            except:
+                pass
+            Log(key_name = str(datetime.datetime.now() + datetime.timedelta(hours=8)),Type = 'Indicate Interest', \
+                        Time = str(datetime.datetime.now() + datetime.timedelta(hours=8)), \
+                        UserID =  user.email(), ItemID = key_name, RecipientID = Items.get_by_key_name(key_name).Seller_Name ).put()
+            self.redirect('/item_detail?key_name=%s' % key_name)
+        else:
+            self.redirect("/error")
 
 class Trade(webapp2.RequestHandler):
     def post(self):
         user = users.get_current_user()
-        item_id = self.request.get('item_id')
-        buyer_id = self.request.get('buyer_id')
-        buyers = Items.get_by_key_name(item_id).Buyers
-        item_name = Items.get_by_key_name(item_id).Title
-        sell_items = User.get_by_key_name(user.email()).Sell_Items
-        sell_items.remove(item_id)
-        User(key_name = user.email(), Email = user.email(),Name = User.get_by_key_name(user.email()).Name ,Sell_Items = sell_items , Buy_Items=User.get_by_key_name(user.email()).Buy_Items).put()
-        for buyer in buyers:
-            buy_items = User.get_by_key_name(buyer).Buy_Items
-            if item_id in buy_items:
-                buy_items.remove(item_id)
-                User(key_name = user.email(), Email = user.email(),Name = User.get_by_key_name(user.email()).Name ,Sell_Items = User.get_by_key_name(user.email()).Sell_Items,Buy_Items=buy_items).put()
-        try:
-            user_address = user.email()
-            sender_address = "DHShardcode <noreply@dhshardcode.appspotmail.com>"
-            subject = "[DHS HARDCODE] you have decided to trade %s with %s " %(item_name,User.get_by_key_name(buyer_id).Name)
-            body = '''Please contact him/ her via the following email address: %s''' %(buyer_id)
-            mail.send_mail(sender_address, user_address, subject, body)
-        except: 
-            pass
+        if user:
+            item_id = self.request.get('item_id')
+            buyer_id = self.request.get('buyer_id')
+            buyers = Items.get_by_key_name(item_id).Buyers
+            item_name = Items.get_by_key_name(item_id).Title
+            sell_items = User.get_by_key_name(user.email()).Sell_Items
+            sell_items.remove(item_id)
+            User(key_name = user.email(), Email = user.email(),Name = User.get_by_key_name(user.email()).Name ,Sell_Items = sell_items , Buy_Items=User.get_by_key_name(user.email()).Buy_Items).put()
+            for buyer in buyers:
+                buy_items = User.get_by_key_name(buyer).Buy_Items
+                if item_id in buy_items:
+                    buy_items.remove(item_id)
+                    User(key_name = user.email(), Email = user.email(),Name = User.get_by_key_name(user.email()).Name ,Sell_Items = User.get_by_key_name(user.email()).Sell_Items,Buy_Items=buy_items).put()
+            try:
+                user_address = user.email()
+                sender_address = "DHShardcode <noreply@dhshardcode.appspotmail.com>"
+                subject = "[DHS HARDCODE] you have decided to trade %s with %s " %(item_name,User.get_by_key_name(buyer_id).Name)
+                body = '''Please contact him/ her via the following email address: %s''' %(buyer_id)
+                mail.send_mail(sender_address, user_address, subject, body)
+            except: 
+                pass
 
-        try:
-            user_address = buyer_id
-            sender_address = "DHShardcode <noreply@dhshardcode.appspotmail.com>"
-            subject = "[DHS HARDCODE]  Seller %s have decided to trade %s with you! " %(User.get_by_key_name(user.email()).Name,item_name)
-            body = '''Please contact him/ her via the following email address: %s''' %(user.email())
-            mail.send_mail(sender_address, user_address, subject, body)
-        except: 
-            pass
-        
-        Items.get_by_key_name(item_id).delete()
-        Log(key_name = str(datetime.datetime.now() + datetime.timedelta(hours=8)),Type = 'Trade', \
-                    Time = str(datetime.datetime.now() + datetime.timedelta(hours=8)), \
-                    UserID =  user.email(), ItemID = item_id, RecipientID = buyer_id ).put()
-        self.redirect('/profile')
+            try:
+                user_address = buyer_id
+                sender_address = "DHShardcode <noreply@dhshardcode.appspotmail.com>"
+                subject = "[DHS HARDCODE]  Seller %s have decided to trade %s with you! " %(User.get_by_key_name(user.email()).Name,item_name)
+                body = '''Please contact him/ her via the following email address: %s''' %(user.email())
+                mail.send_mail(sender_address, user_address, subject, body)
+            except: 
+                pass
+            
+            Items.get_by_key_name(item_id).delete()
+            Log(key_name = str(datetime.datetime.now() + datetime.timedelta(hours=8)),Type = 'Trade', \
+                        Time = str(datetime.datetime.now() + datetime.timedelta(hours=8)), \
+                        UserID =  user.email(), ItemID = item_id, RecipientID = buyer_id ).put()
+            self.redirect('/profile')
+        else:
+            self.redirect("/error")
         
 class Expired(webapp2.RequestHandler):
     def get(self):
@@ -384,35 +425,40 @@ class Activation(webapp2.RequestHandler):
         def post(self):
             key_name = self.request.get("key_name")
             user=users.get_current_user()
-            if Items.get_by_key_name(key_name).Activated:
-                Items(key_name = key_name, Buyers = Items.get_by_key_name(key_name).Buyers,Title = Items.get_by_key_name(key_name).Title, Description = Items.get_by_key_name(key_name).Description, \
-                      Price = Items.get_by_key_name(key_name).Price, Creation_Date = Items.get_by_key_name(key_name).Creation_Date, \
-                      Key_Date = Items.get_by_key_name(key_name).Key_Date, Seller = Items.get_by_key_name(key_name).Seller, Activated=False, Comments = Items.get_by_key_name(key_name).Comments).put()
-            else:
-                Items(key_name = key_name, Buyers = Items.get_by_key_name(key_name).Buyers,Title = Items.get_by_key_name(key_name).Title, Description = Items.get_by_key_name(key_name).Description, \
-                      Price = Items.get_by_key_name(key_name).Price, Creation_Date = Items.get_by_key_name(key_name).Creation_Date, \
-                      Key_Date = Items.get_by_key_name(key_name).Key_Date, Seller = Items.get_by_key_name(key_name).Seller, Activated=True, Comments = Items.get_by_key_name(key_name).Comments).put()
+            if user:
+                if Items.get_by_key_name(key_name).Activated:
+                    Items(key_name = key_name, Buyers = Items.get_by_key_name(key_name).Buyers,Title = Items.get_by_key_name(key_name).Title, Description = Items.get_by_key_name(key_name).Description, \
+                          Price = Items.get_by_key_name(key_name).Price, Creation_Date = Items.get_by_key_name(key_name).Creation_Date, \
+                          Key_Date = Items.get_by_key_name(key_name).Key_Date, Seller = Items.get_by_key_name(key_name).Seller, Activated=False, Comments = Items.get_by_key_name(key_name).Comments).put()
+                else:
+                    Items(key_name = key_name, Buyers = Items.get_by_key_name(key_name).Buyers,Title = Items.get_by_key_name(key_name).Title, Description = Items.get_by_key_name(key_name).Description, \
+                          Price = Items.get_by_key_name(key_name).Price, Creation_Date = Items.get_by_key_name(key_name).Creation_Date, \
+                          Key_Date = Items.get_by_key_name(key_name).Key_Date, Seller = Items.get_by_key_name(key_name).Seller, Activated=True, Comments = Items.get_by_key_name(key_name).Comments).put()
 
-            
-            self.redirect('/profile')
+                
+                self.redirect('/profile')
+            else:
+                self.redirect("/error")
 
 class Admin(webapp2.RequestHandler):
     def get(self):
         user=users.get_current_user()
-        
-        template_values = {
-		'user':user,
-                'users':users,
-                'User':User,
-                'Items':Items,
-                #'key_name':key_name,
-                #'Items':Items,
-                #'not_seller':not_seller,
-               # 'not_buyer':not_buyer,
-	}
- 
-        template = jinja_environment.get_template('admin.html')
-        self.response.out.write(template.render(template_values))
+        if users.is_current_user_admin():
+            template_values = {
+                    'user':user,
+                    'users':users,
+                    'User':User,
+                    'Items':Items,
+                    #'key_name':key_name,
+                    #'Items':Items,
+                    #'not_seller':not_seller,
+                   # 'not_buyer':not_buyer,
+            }
+     
+            template = jinja_environment.get_template('admin.html')
+            self.response.out.write(template.render(template_values))
+        else:
+            self.redirect("/error")
                         
 class Expired(webapp2.RequestHandler):
     def get(self):
@@ -434,7 +480,10 @@ class Expired(webapp2.RequestHandler):
                 i.delete()
         
                       
-                
+class Error(webapp2.RequestHandler):
+    def get(self):
+        self.response.write("""<h1>HACKING ATTEMPTED!!!</h1>""")
+        self.response.write("""<br><a href="/">GET OUT!</a>""")
 
         
 app = webapp2.WSGIApplication([
@@ -452,5 +501,6 @@ app = webapp2.WSGIApplication([
     ('/trade', Trade),
     ('/activation', Activation),
     ('/expired', Expired),
-    ('/admin',Admin)
+    ('/admin',Admin),
+    ('/error',Error)
 ], debug=True)
