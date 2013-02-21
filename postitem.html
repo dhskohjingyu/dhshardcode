@@ -8,7 +8,7 @@
 <form name="item" action="/post_item_confirmed" method="post">
 	<h1>Item: </h1><textarea name="title" value = "{{escape}}"></textarea><br>
 	<h1>Description: </h1><input type="text" name="description" value = "{{escape}}"><br>
-	<h1>Price: </h1><input type="number" name="price" value = "{{escape}}" min="0"><br>
+	<h1>Price: </h1><input type="number" step="any" name="price" value = "{{escape}}" min="0"><br>
 	
 	<input type="submit" class="red-button" />
 
