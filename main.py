@@ -184,6 +184,7 @@ class Edit_Profile(webapp2.RequestHandler):
 
 class Post_Item(webapp2.RequestHandler):
     def get(self):
+        user = users.get_current_user()
         if user:
             template_values = {
 
