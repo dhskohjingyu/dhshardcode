@@ -24,6 +24,11 @@ input[type=text]
 	margin-top:5px;
 }
 
+#search
+{
+	left: 60%;
+}
+
 body
 {
 	background-color: #333;
