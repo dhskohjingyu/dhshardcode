@@ -474,7 +474,7 @@ class Update_Item(webapp2.RequestHandler):
                     user_address = buyer
                     sender_address = "DHShardcode <noreply@dhshardcode.appspotmail.com>"
                     subject = "[DHS HARDCODE] Price Change from Seller "
-                    body = '''The seller %s has decided to change the price of item %s from %s to %s, please indicate your interset again.''' %(item.Seller,item.Title,item.Price,\
+                    body = '''The seller %s has decided to change the price of item %s from %s to %s,please indicate your interest again.''' %(item.Seller,item.Title,item.Price,\
                                                                                                                                                 self.request.get('item_price'))
                     mail.send_mail(sender_address, user_address, subject, body)
                 except: 
